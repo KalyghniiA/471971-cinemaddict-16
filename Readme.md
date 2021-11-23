@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Саша Калюжный](https://up.htmlacademy.ru/ecmascript/16/user/471971).
-* Наставник: `Неизвестно`.
+* Наставник: [Антон Попов](https://htmlacademy.ru/profile/joker).
 
 ---
 
