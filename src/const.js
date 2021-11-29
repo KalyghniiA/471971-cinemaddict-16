@@ -11,3 +11,9 @@ export const FilmsQuantity = {
   MOST_COMMENTED: 2,
 };
 
+export const FormateDate = {
+  YEAR: 'YYYY',
+  FULL: 'D MMMM YYYY',
+  COMMENTS_DATE: 'YYYY/MM/D H:m',
+};
+
