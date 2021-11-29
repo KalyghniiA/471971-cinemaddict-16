@@ -1,1 +1,1 @@
-export const createStatisticElement = () => ('<p>130 291 movies inside</p>');
+export const createStatisticElement = (data) => `<p>${data.length} movies inside</p>`;
