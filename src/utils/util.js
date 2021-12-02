@@ -1,9 +1,3 @@
-import {Position} from '../const';
-
-export const renderElement = (container, template, place = Position.BEFOREEND) => {
-  container.insertAdjacentHTML(place, template);
-};
-
 export const getRandomElementInArray = (items) => items[Math.floor(Math.random() * items.length)];
 
 export const getRandomFloat = (start, end, precision) => (Math.random() * (end - start) + start).toFixed(precision);
