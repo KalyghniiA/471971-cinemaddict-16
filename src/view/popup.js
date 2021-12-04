@@ -1,5 +1,56 @@
 import {generateFormatDate, getTimeFromMins} from '../utils/date';
 import {FormateDate} from '../const';
+import {createElement} from '../utils/render';
+
+const createGenreElement = (genres) => {
+  let elem = '';
+  for (let i = 0; i < genres.length; i++) {
+    elem += `<span class="film-details__genre">${genres[i]}</span>`;
+  }
+
+  return elem;
+};
+
+const gettingComments = (data, id) => {
+  const arr = [];
+
+  for(let i = 0; i < data.length; i++) {
+    if (id.includes(data[i].id)) {
+      arr.push(data[i]);
+    }
+  }
+
+  return arr;
+};
+
+const createCommentsElement = (data) => {
+  let element = '';
+
+  for (let i = 0; i < data.length; i++) {
+    const {
+      author,
+      comments: text,
+      date: time,
+      emotion
+    } = data[i];
+
+    element += `
+      <li class="film-details__comment">
+            <span class="film-details__comment-emoji">
+              <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-sleeping">
+            </span>
+            <div>
+              <p class="film-details__comment-text">${text}</p>
+              <p class="film-details__comment-info">
+                <span class="film-details__comment-author">${author}</span>
+                <span class="film-details__comment-day">${generateFormatDate(time, FormateDate.COMMENTS_DATE)}</span>
+                <button class="film-details__comment-delete">Delete</button>
+              </p>
+            </div>
+          </li>`;
+  }
+  return element;
+};
 
 export const createPopupElement = (filmData, commentsData) => {
   const {
@@ -28,56 +79,6 @@ export const createPopupElement = (filmData, commentsData) => {
     comments: commentsId
   } = filmData;
 
-
-  const createGenreElement = (genreArr) => {
-    let elem = '';
-    for (let i = 0; i < genreArr.length; i++) {
-      elem += `<span class="film-details__genre">${genreArr[i]}</span>`;
-    }
-
-    return elem;
-  };
-
-  const gettingComments = (data, idArr) => {
-    const arr = [];
-
-    for(let i = 0; i < data.length; i++) {
-      if (idArr.includes(data[i].id)) {
-        arr.push(data[i]);
-      }
-    }
-
-    return arr;
-  };
-
-  const createCommentsElement = (data) => {
-    let element = '';
-
-    for (let i = 0; i < data.length; i++) {
-      const {
-        author,
-        comments: text,
-        date: time,
-        emotion
-      } = data[i];
-
-      element += `
-      <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-sleeping">
-            </span>
-            <div>
-              <p class="film-details__comment-text">${text}</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${author}</span>
-                <span class="film-details__comment-day">${generateFormatDate(time, FormateDate.COMMENTS_DATE)}</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>`;
-    }
-    return element;
-  };
 
   const comments = gettingComments(commentsData, commentsId);
 
@@ -195,3 +196,30 @@ export const createPopupElement = (filmData, commentsData) => {
 </section>`
   );
 };
+
+export default class PopupView {
+  #element = null;
+  #filmData = null;
+  #commentsData = null;
+
+  constructor (filmData, commentsData) {
+    this.#filmData = filmData;
+    this.#commentsData = commentsData;
+  }
+
+  get element () {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template () {
+    return createPopupElement(this.#filmData,this.#commentsData);
+  }
+
+  removeElement () {
+    this.#element = null;
+  }
+}

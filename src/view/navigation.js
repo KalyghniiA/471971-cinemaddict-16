@@ -1,4 +1,6 @@
-export const createNavigationElement = (data) => {
+import {createElement} from '../utils/render';
+
+const createNavigationElement = (data) => {
 
   const filmsFilterMap = {
     watchlist: data.filter((film) => film.userDetails.watchlist),
@@ -17,3 +19,28 @@ export const createNavigationElement = (data) => {
     <a href="#stats" class="main-navigation__additional">Stats</a>
   </nav>`);
 };
+
+export default class NavigationView {
+  #element = null;
+  #data = null;
+
+  constructor(data) {
+    this.#data = data;
+  }
+
+  get element () {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template () {
+    return createNavigationElement(this.#data);
+  }
+
+  removeElement () {
+    this.#element = null;
+  }
+}

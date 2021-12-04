@@ -1,9 +1,10 @@
 import {generateFormatDate, getTimeFromMins} from '../utils/date';
 import {FormateDate} from '../const';
+import {createElement} from '../utils/render';
 
 const MAX_QUANTITY_SYMBOL = 140;
 
-export const createFilmCardElement = (data) => {
+const createFilmCardElement = (data) => {
   const {
     filmInfo:{
       title,
@@ -45,3 +46,27 @@ export const createFilmCardElement = (data) => {
         </article>`);
 };
 
+export default class FilmsCardView {
+  #element = null;
+  #data = null;
+
+  constructor (data) {
+    this.#data = data;
+  }
+
+  get element () {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template () {
+    return createFilmCardElement(this.#data);
+  }
+
+  removeElement () {
+    this.#element = null;
+  }
+}
