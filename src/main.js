@@ -13,6 +13,7 @@ import FilmsCardView from './view/film-card';
 import StatisticsView from './view/statistics';
 import {generateComment, generateMocks} from './mock';
 import PopupView from './view/popup';
+import ListEmptyView from './view/list-empty';
 
 
 //Data
@@ -47,18 +48,22 @@ const renderFilm = (container, filmData, comments) => {
       render(document.body, popup.element);
       document.body.classList.add('hide-overflow');
 
-      const removePopup = () => {
-        popup.element.remove();
-        document.body.classList.remove('hide-overflow');
-      };
-
-      /*const onEscKeyDown = (event) => {
+      const onEscKeyDown = (event) => {
         if (event.key === 'Escape' || event.key === 'Esc') {
           event.preventDefault();
+          // eslint-disable-next-line no-use-before-define
           removePopup();
           document.removeEventListener('keydown', onEscKeyDown);
         }
-      };*/
+      };
+
+      const removePopup = () => {
+        popup.element.remove();
+        document.body.classList.remove('hide-overflow');
+        document.removeEventListener('keydown', onEscKeyDown);
+      };
+
+      document.addEventListener('keydown', onEscKeyDown);
 
       popup
         .element
@@ -138,19 +143,16 @@ render(mainContainerElement, new SortView().element);
 const filmsContainerElement = new FilmsView();
 
 render(mainContainerElement, filmsContainerElement.element);
-//=>mainFilms
-
-
-renderMainFilms(filmsContainerElement.element, mockData, commentsData);
-
-
-//=>TopRated
-renderTopRatedFilms(filmsContainerElement.element, mockData, commentsData);
-
-//=>MostCommented
-
-renderMostCommentedFilms(filmsContainerElement.element, mockData, commentsData);
-
+if (!mockData.length) {
+  render(filmsContainerElement.element, new ListEmptyView().element);
+} else {
+  //=>mainFilms
+  renderMainFilms(filmsContainerElement.element, mockData, commentsData);
+  //=>TopRated
+  renderTopRatedFilms(filmsContainerElement.element, mockData, commentsData);
+  //=>MostCommented
+  renderMostCommentedFilms(filmsContainerElement.element, mockData, commentsData);
+}
 //=>Footer
 const footerStatisticsElement = document.querySelector('.footer__statistics');
 render(footerStatisticsElement, new StatisticsView(mockData).element);
