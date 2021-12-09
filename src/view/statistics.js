@@ -1,28 +1,16 @@
-import {createElement} from '../utils/render';
+import AbstractComponentView from './abstract-component';
 
 const createStatisticElement = (data) => `<p>${data.length} movies inside</p>`;
 
-export default class StatisticsView {
-  #element = null;
+export default class StatisticsView extends AbstractComponentView {
   #data = null
 
   constructor (data) {
+    super();
     this.#data = data;
-  }
-
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template () {
     return createStatisticElement(this.#data);
-  }
-
-  removeElement () {
-    this.#element = null;
   }
 }

@@ -1,6 +1,6 @@
 import {generateFormatDate, getTimeFromMins} from '../utils/date';
 import {FormateDate} from '../const';
-import {createElement} from '../utils/render';
+import AbstractComponentView from './abstract-component';
 
 const createGenreElement = (genres) => {
   let elem = '';
@@ -197,29 +197,30 @@ export const createPopupElement = (filmData, commentsData) => {
   );
 };
 
-export default class PopupView {
-  #element = null;
+export default class PopupView extends AbstractComponentView {
   #filmData = null;
   #commentsData = null;
 
   constructor (filmData, commentsData) {
+    super();
     this.#filmData = filmData;
     this.#commentsData = commentsData;
-  }
-
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template () {
     return createPopupElement(this.#filmData,this.#commentsData);
   }
 
-  removeElement () {
-    this.#element = null;
+  setRemovePopup = (callback) => {
+    this._callback.clickRemovePopup = callback;
+
+    this
+      .element
+      .querySelector('.film-details__close-btn')
+      .addEventListener('click',this.#clickRemovePopupHandler);
+  }
+
+  #clickRemovePopupHandler = () => {
+    this._callback.clickRemovePopup();
   }
 }

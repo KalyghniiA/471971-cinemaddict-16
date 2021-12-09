@@ -1,6 +1,6 @@
 import {generateFormatDate, getTimeFromMins} from '../utils/date';
 import {FormateDate} from '../const';
-import {createElement} from '../utils/render';
+import AbstractComponentView from './abstract-component';
 
 const MAX_QUANTITY_SYMBOL = 140;
 
@@ -46,27 +46,30 @@ const createFilmCardElement = (data) => {
         </article>`);
 };
 
-export default class FilmsCardView {
-  #element = null;
+export default class FilmsCardView extends AbstractComponentView {
   #data = null;
 
   constructor (data) {
+    super();
     this.#data = data;
-  }
-
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template () {
     return createFilmCardElement(this.#data);
   }
 
-  removeElement () {
-    this.#element = null;
+  setOpenPopup = (callback) => {
+    this._callback.clickCardElement = callback;
+
+    this
+      .element
+      .querySelector('.film-card__link')
+      .addEventListener('click', this.#clickCardHandler);
+  }
+
+  #clickCardHandler = (evt) => {
+    evt.preventDefault();
+
+    this._callback.clickCardElement();
   }
 }

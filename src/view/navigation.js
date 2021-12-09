@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render';
+import AbstractComponentView from './abstract-component';
 
 const createNavigationElement = (data) => {
 
@@ -20,27 +20,15 @@ const createNavigationElement = (data) => {
   </nav>`);
 };
 
-export default class NavigationView {
-  #element = null;
+export default class NavigationView extends AbstractComponentView{
   #data = null;
 
   constructor(data) {
+    super();
     this.#data = data;
-  }
-
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template () {
     return createNavigationElement(this.#data);
-  }
-
-  removeElement () {
-    this.#element = null;
   }
 }
