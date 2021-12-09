@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render';
+import AbstractComponentView from './abstract-component';
 
 const createTopRatedFilmsElement = () => (
   `<section class="films-list films-list--extra films-list--top-rated">
@@ -8,22 +8,8 @@ const createTopRatedFilmsElement = () => (
     </section>`
 );
 
-export default class TopRatedFilmsView {
-  #element = null;
-
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+export default class TopRatedFilmsView extends AbstractComponentView{
   get template () {
     return createTopRatedFilmsElement();
-  }
-
-  removeElement () {
-    this.#element = null;
   }
 }

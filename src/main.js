@@ -31,46 +31,39 @@ const renderFilm = (container, filmData, comments) => {
   const film = new FilmsCardView(filmData);
 
 
-  render(container, film.element);
+  render(container, film);
   //render Popup
 
-  film
-    .element
-    .querySelector('.film-card__link')
-    .addEventListener('click', (evt) => {
-      evt.preventDefault();
+  film.setOpenPopup(() => {
 
-      if (document.querySelector('.film-details')) {
-        document.querySelector('.film-details').remove();
-      }
+    if (document.querySelector('.film-details')) {
+      document.querySelector('.film-details').remove();
+    }
 
-      const popup = new PopupView(filmData, comments);
-      render(document.body, popup.element);
-      document.body.classList.add('hide-overflow');
+    const popup = new PopupView(filmData, comments);
+    render(document.body, popup);
+    document.body.classList.add('hide-overflow');
 
-      const onEscKeyDown = (event) => {
-        if (event.key === 'Escape' || event.key === 'Esc') {
-          event.preventDefault();
-          // eslint-disable-next-line no-use-before-define
-          removePopup();
-          document.removeEventListener('keydown', onEscKeyDown);
-        }
-      };
-
-      const removePopup = () => {
-        popup.element.remove();
-        document.body.classList.remove('hide-overflow');
+    const onEscKeyDown = (event) => {
+      if (event.key === 'Escape' || event.key === 'Esc') {
+        event.preventDefault();
+        // eslint-disable-next-line no-use-before-define
+        removePopup();
         document.removeEventListener('keydown', onEscKeyDown);
-      };
+      }
+    };
 
-      document.addEventListener('keydown', onEscKeyDown);
+    const removePopup = () => {
+      popup.element.remove();
+      document.body.classList.remove('hide-overflow');
+      document.removeEventListener('keydown', onEscKeyDown);
+    };
 
-      popup
-        .element
-        .querySelector('.film-details__close-btn')
-        .addEventListener('click', removePopup);
+    document.addEventListener('keydown', onEscKeyDown);
 
-    });
+    popup.setRemovePopup(removePopup);
+
+  });
 };
 
 const renderMainFilms = (container, filmsData, comments) => {
@@ -78,8 +71,8 @@ const renderMainFilms = (container, filmsData, comments) => {
   const filmsListContainer = new FilmsListContainerView();
 
 
-  render(container, mainFilmsListElement.element);
-  render(mainFilmsListElement.element, filmsListContainer.element);
+  render(container, mainFilmsListElement);
+  render(mainFilmsListElement, filmsListContainer);
   for (let i = 0; i < Math.min(filmsData.length, FILM_CARD_COUNT_PER_STEP); i++) {
     renderFilm(filmsListContainer.element, filmsData[i], comments);
   }
@@ -89,10 +82,10 @@ const renderMainFilms = (container, filmsData, comments) => {
 
     let renderedFilmsCount = FILM_CARD_COUNT_PER_STEP;
 
-    render(mainFilmsListElement.element, buttonShowMore.element);
+    render(mainFilmsListElement, buttonShowMore);
 
-    buttonShowMore.element.addEventListener('click', (evt) => {
-      evt.preventDefault();
+    buttonShowMore.setClickHandler(() => {
+
       filmsData
         .slice(renderedFilmsCount, renderedFilmsCount + FILM_CARD_COUNT_PER_STEP)
         .forEach((film) =>  renderFilm(filmsListContainer.element, film, comments));
@@ -110,8 +103,8 @@ const renderTopRatedFilms = (container, filmsData, comments) => {
   const topRatedFilmsListElement = new TopRatedFilmsView();
   const filmsListContainer = new FilmsListContainerView();
 
-  render(container, topRatedFilmsListElement.element);
-  render(topRatedFilmsListElement.element, filmsListContainer.element);
+  render(container, topRatedFilmsListElement);
+  render(topRatedFilmsListElement, filmsListContainer);
 
   for (let i = 0; i < Math.min(filmsData.length, FilmsQuantity.TOP_RATED); i++) {
     renderFilm(filmsListContainer.element, filmsData[i], comments);
@@ -122,8 +115,8 @@ const renderMostCommentedFilms = (container, filmsData, comments) => {
   const mostCommentedFilmsListElement = new MostCommentedFilmsListView();
   const filmsListContainer = new FilmsListContainerView();
 
-  render(container, mostCommentedFilmsListElement.element);
-  render(mostCommentedFilmsListElement.element, filmsListContainer.element);
+  render(container, mostCommentedFilmsListElement);
+  render(mostCommentedFilmsListElement, filmsListContainer);
 
   for (let i = 0; i < Math.min(filmsData.length, FilmsQuantity.MOST_COMMENTED); i++) {
     renderFilm(filmsListContainer.element, filmsData[i], comments);
@@ -132,19 +125,19 @@ const renderMostCommentedFilms = (container, filmsData, comments) => {
 //=>Header
 const headerContainerElement = document.querySelector('.header');
 
-render(headerContainerElement, new ProfileView().element);
+render(headerContainerElement, new ProfileView());
 //=> MainContainer
 const mainContainerElement = document.querySelector('.main');
 
 
-render(mainContainerElement, new NavigationView(mockData).element, Position.AFTERBEGIN);
-render(mainContainerElement, new SortView().element);
+render(mainContainerElement, new NavigationView(mockData), Position.AFTERBEGIN);
+render(mainContainerElement, new SortView());
 
 const filmsContainerElement = new FilmsView();
 
-render(mainContainerElement, filmsContainerElement.element);
+render(mainContainerElement, filmsContainerElement);
 if (!mockData.length) {
-  render(filmsContainerElement.element, new ListEmptyView().element);
+  render(filmsContainerElement, new ListEmptyView());
 } else {
   //=>mainFilms
   renderMainFilms(filmsContainerElement.element, mockData, commentsData);
@@ -155,4 +148,4 @@ if (!mockData.length) {
 }
 //=>Footer
 const footerStatisticsElement = document.querySelector('.footer__statistics');
-render(footerStatisticsElement, new StatisticsView(mockData).element);
+render(footerStatisticsElement, new StatisticsView(mockData));

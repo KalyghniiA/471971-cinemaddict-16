@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render';
+import AbstractComponentView from './abstract-component';
 
 const createMostCommentedFilmsElement = () => (
   `<section class="films-list films-list--extra films-list--most-commented">
@@ -9,22 +9,8 @@ const createMostCommentedFilmsElement = () => (
   </section>`
 );
 
-export default class MostCommentedFilmsListView {
-  #element = null;
-
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+export default class MostCommentedFilmsListView extends AbstractComponentView {
   get template () {
     return createMostCommentedFilmsElement();
-  }
-
-  removeElement () {
-    this.#element = null;
   }
 }
