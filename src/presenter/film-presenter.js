@@ -10,18 +10,18 @@ export default class FilmPresenter {
   #popupComponent = null;
   #changeData = null;
 
-  constructor (container, changeData) {
-    this.#container = container;
+  constructor (changeData) {
+
     this.#changeData = changeData;
   }
 
-  init (filmData, commentsData) {
+  init = (filmData, commentsData, container = null) => {
+    if (container !== null) {this.#container = container;}
     this.#filmData = filmData;
     this.#commentsData = commentsData;
 
     const prevFilmComponent = this.#filmComponent;
     this.#filmComponent = new FilmsCardView(this.#filmData);
-
 
 
     this.#filmComponent.setOpenPopup(() => {
@@ -34,11 +34,13 @@ export default class FilmPresenter {
         {
           ...this.#filmData,
           userDetails: {
+            ...this.#filmData.userDetails,
             watchlist: !this.#filmData.userDetails.watchlist
           }
-        });
-    });
+        }
+      );
 
+    });
 
 
     this.#filmComponent.setAlreadyWatched(() => {

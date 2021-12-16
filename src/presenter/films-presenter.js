@@ -40,20 +40,26 @@ export default class FilmsPresenter {
     this.#filmsData = [...filmsData];
     this.#commentsData = [...commentsData];
 
+    this.#fillingFilmsMap();
+
     this.#renderBoard();
     this.#renderStatistics();
-    console.log(this.#filmsDataMap);
   }
+
+  #fillingFilmsMap = () => {
+    this.#filmsData.forEach((film) => {
+      const filmPresenter = new FilmPresenter(this.#handleFilmChange);
+      this.#filmsDataMap.set(film.id, filmPresenter);
+    });
+  }
+
 
   #renderNavigation = () => {
     render(this.#mainContainer, new NavigationView(this.#filmsData), Position.AFTERBEGIN);
   }
 
-  #renderFilmCard = (container, filmData) => {
-    const filmPresenter = new FilmPresenter(container, this.#handleFilmChange);
-
-    filmPresenter.init(filmData, this.#commentsData);
-    this.#filmsDataMap.set(filmData.id, filmPresenter);
+  #renderFilmCard = (container, filmData, element) => {
+    element.init(filmData, this.#commentsData, container);
   }
 
   #renderMainFilms = (container) => {
@@ -62,15 +68,20 @@ export default class FilmsPresenter {
     render(this.#mainFilmsListComponent, filmsListContainer);
 
     for (let i = 0; i < Math.min(this.#filmsData.length, FILM_CARD_COUNT_PER_STEP); i++) {
-      this.#renderFilmCard(filmsListContainer, this.#filmsData[i]);
+      this.#renderFilmCard(
+        filmsListContainer,
+        this.#filmsData[i],
+        this.#filmsDataMap.get(this.#filmsData[i].id)
+      );
     }
 
+
     if (this.#filmsData.length >= FILM_CARD_COUNT_PER_STEP) {
-      this.#renderButtonShowMore();
+      this.#renderButtonShowMore(filmsListContainer);
     }
   }
 
-  #renderButtonShowMore = () => {
+  #renderButtonShowMore = (container) => {
 
 
     render(this.#mainFilmsListComponent, this.#buttonShowMoreComponent);
@@ -79,7 +90,7 @@ export default class FilmsPresenter {
 
       this.#filmsData
         .slice(this.#renderedFilmsCount, this.#renderedFilmsCount + FILM_CARD_COUNT_PER_STEP)
-        .forEach((film) => this.#renderFilmCard(this.#mainFilmsListComponent.element.querySelector('.films-list__container'), film));
+        .forEach((film) => this.#renderFilmCard(container, film, this.#filmsDataMap.get(film.id)));
 
       this.#renderedFilmsCount += FILM_CARD_COUNT_PER_STEP;
 
@@ -97,7 +108,11 @@ export default class FilmsPresenter {
     render(this.#topRatedFilmsListComponent, filmsListContainer);
 
     for (let i = 0; i < Math.min(this.#filmsData.length, FilmsQuantity.TOP_RATED); i++) {
-      this.#renderFilmCard(filmsListContainer, this.#filmsData[i], this.#commentsData);
+      this.#renderFilmCard(
+        filmsListContainer,
+        this.#filmsData[i],
+        this.#filmsDataMap.get(this.#filmsData[i].id)
+      );
     }
   }
 
@@ -108,7 +123,11 @@ export default class FilmsPresenter {
     render(this.#mostCommentedFilmsListComponent, filmsListContainer);
 
     for (let i = 0; i < Math.min(this.#filmsData.length, FilmsQuantity.MOST_COMMENTED); i++) {
-      this.#renderFilmCard(filmsListContainer, this.#filmsData[i], this.#commentsData);
+      this.#renderFilmCard(
+        filmsListContainer,
+        this.#filmsData[i],
+        this.#filmsDataMap.get(this.#filmsData[i].id)
+      );
     }
   }
 
