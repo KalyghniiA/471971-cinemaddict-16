@@ -41,8 +41,9 @@ export const replace = (newElement, oldElement) => {
   if (parent === null) {
     throw new Error('Parent element doesn\'t exist');
   }
-
+  const oldScroll = oldChild.scrollTop;
   parent.replaceChild(newChild, oldChild);
+  newChild.scrollTop = oldScroll;
 };
 
 export const remove = (component) => {

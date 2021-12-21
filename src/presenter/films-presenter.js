@@ -6,12 +6,13 @@ import TopRatedFilmsView from '../view/top-rated-films-list';
 import MostCommentedFilmsListView from '../view/most-commented-films-list';
 import {remove, render} from '../utils/render';
 import NavigationView from '../view/navigation';
-import {FilmsQuantity, Position} from '../const';
+import {FilmsContainer, FilmsQuantity, Position} from '../const';
 import FilmsListContainerView from '../view/films-list-container';
 import StatisticsView from '../view/statistics';
 import ButtonShowMoreView from '../view/show-more-button';
 import FilmPresenter from './film-presenter';
 import {updateItem} from '../utils/util';
+
 
 const FILM_CARD_COUNT_PER_STEP = 5;
 
@@ -30,7 +31,9 @@ export default class FilmsPresenter {
 
 
   #renderedFilmsCount = FILM_CARD_COUNT_PER_STEP;
-  #filmsDataMap = new Map();
+  #mainFilmsMap = new Map();
+  #topRatedFilmsMap = new Map();
+  #mostCommentedFilmsMap = new Map();
 
   constructor (container) {
     this.#mainContainer = container;
@@ -40,17 +43,8 @@ export default class FilmsPresenter {
     this.#filmsData = [...filmsData];
     this.#commentsData = [...commentsData];
 
-    this.#fillingFilmsMap();
-
     this.#renderBoard();
     this.#renderStatistics();
-  }
-
-  #fillingFilmsMap = () => {
-    this.#filmsData.forEach((film) => {
-      const filmPresenter = new FilmPresenter(this.#handleFilmChange);
-      this.#filmsDataMap.set(film.id, filmPresenter);
-    });
   }
 
 
@@ -58,21 +52,19 @@ export default class FilmsPresenter {
     render(this.#mainContainer, new NavigationView(this.#filmsData), Position.AFTERBEGIN);
   }
 
-  #renderFilmCard = (container, filmData, element) => {
-    element.init(filmData, this.#commentsData, container);
+  #renderFilmCard = (filmData, container, filmsMap) => {
+    const filmPresenter = new FilmPresenter(this.#handleFilmChange,  container);
+    filmPresenter.init(filmData, this.#commentsData);
+    filmsMap.set(filmData.id, filmPresenter);
   }
 
   #renderMainFilms = (container) => {
-    const filmsListContainer = new FilmsListContainerView();
+    const filmsListContainer = new FilmsListContainerView(FilmsContainer.MAIN_FILMS);
     render(container, this.#mainFilmsListComponent);
     render(this.#mainFilmsListComponent, filmsListContainer);
 
     for (let i = 0; i < Math.min(this.#filmsData.length, FILM_CARD_COUNT_PER_STEP); i++) {
-      this.#renderFilmCard(
-        filmsListContainer,
-        this.#filmsData[i],
-        this.#filmsDataMap.get(this.#filmsData[i].id)
-      );
+      this.#renderFilmCard(this.#filmsData[i],filmsListContainer, this.#mainFilmsMap);
     }
 
 
@@ -90,7 +82,7 @@ export default class FilmsPresenter {
 
       this.#filmsData
         .slice(this.#renderedFilmsCount, this.#renderedFilmsCount + FILM_CARD_COUNT_PER_STEP)
-        .forEach((film) => this.#renderFilmCard(container, film, this.#filmsDataMap.get(film.id)));
+        .forEach((film) => this.#renderFilmCard(film, container, this.#mainFilmsMap));
 
       this.#renderedFilmsCount += FILM_CARD_COUNT_PER_STEP;
 
@@ -102,32 +94,24 @@ export default class FilmsPresenter {
 
 
   #renderTopRatedFilms = (container) => {
-    const filmsListContainer = new FilmsListContainerView();
+    const filmsListContainer = new FilmsListContainerView(FilmsContainer.TOP_RATED);
 
     render(container, this.#topRatedFilmsListComponent);
     render(this.#topRatedFilmsListComponent, filmsListContainer);
 
     for (let i = 0; i < Math.min(this.#filmsData.length, FilmsQuantity.TOP_RATED); i++) {
-      this.#renderFilmCard(
-        filmsListContainer,
-        this.#filmsData[i],
-        this.#filmsDataMap.get(this.#filmsData[i].id)
-      );
+      this.#renderFilmCard(this.#filmsData[i], filmsListContainer, this.#topRatedFilmsMap);
     }
   }
 
   #renderMostCommentedFilms = (container) => {
-    const filmsListContainer = new FilmsListContainerView();
+    const filmsListContainer = new FilmsListContainerView(FilmsContainer.MOST_COMMENTED);
 
     render(container, this.#mostCommentedFilmsListComponent);
     render(this.#mostCommentedFilmsListComponent, filmsListContainer);
 
     for (let i = 0; i < Math.min(this.#filmsData.length, FilmsQuantity.MOST_COMMENTED); i++) {
-      this.#renderFilmCard(
-        filmsListContainer,
-        this.#filmsData[i],
-        this.#filmsDataMap.get(this.#filmsData[i].id)
-      );
+      this.#renderFilmCard(this.#filmsData[i], filmsListContainer, this.#mostCommentedFilmsMap);
     }
   }
 
@@ -153,17 +137,29 @@ export default class FilmsPresenter {
   }
 
   #clearBoard = () => {
-    this.#filmsDataMap.forEach((filmPresenter) => {
+    this.#mainFilmsMap.forEach((filmPresenter) => {
       filmPresenter.destroy();
     });
-    this.#filmsDataMap.clear();
+    this.#topRatedFilmsMap.forEach((filmPresenter) => {
+      filmPresenter.destroy();
+    });
+    this.#mostCommentedFilmsMap.forEach((filmPresenter) => {
+      filmPresenter.destroy();
+    });
+    this.#mainFilmsMap.clear();
+    this.#topRatedFilmsMap.clear();
+    this.#mostCommentedFilmsMap.clear();
     this.#renderedFilmsCount = FILM_CARD_COUNT_PER_STEP;
     remove(this.#buttonShowMoreComponent);
   }
 
   #handleFilmChange = (updateFilm) => {
     this.#filmsData = updateItem(this.#filmsData, updateFilm);
-    this.#filmsDataMap.get(updateFilm.id).init(updateFilm, this.#commentsData);
+    this.#mainFilmsMap.get(updateFilm.id).init(updateFilm, this.#commentsData);
+    if (this.#topRatedFilmsMap.has(updateFilm.id) && this.#mostCommentedFilmsMap.has(updateFilm.id)) {
+      this.#topRatedFilmsMap.get(updateFilm.id).init(updateFilm, this.#commentsData);
+      this.#mostCommentedFilmsMap.get(updateFilm.id).init(updateFilm, this.#commentsData);
+    }
   }
 
   #renderStatistics = () => {
