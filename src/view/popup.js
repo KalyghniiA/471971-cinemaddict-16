@@ -54,6 +54,7 @@ const createCommentsElement = (data) => {
 
 export const createPopupElement = (filmData, commentsData) => {
   const {
+    id,
     filmInfo:{
       title,
       totalRating,
@@ -82,7 +83,7 @@ export const createPopupElement = (filmData, commentsData) => {
 
   const comments = gettingComments(commentsData, commentsId);
 
-  return (`<section class="film-details">
+  return (`<section class="film-details" data-id-card="${id}">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
       <div class="film-details__close">
@@ -146,7 +147,7 @@ export const createPopupElement = (filmData, commentsData) => {
         </div>
       </div>
 
-      <section class="film-details__controls">
+      <section class="film-details__controls" data-id-button="${id}">
         <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
         <button type="button" class="film-details__control-button  film-details__control-button--watched ${alreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
         <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>
@@ -220,7 +221,50 @@ export default class PopupView extends AbstractComponentView {
       .addEventListener('click',this.#clickRemovePopupHandler);
   }
 
+  setAddToWatchlist = (callback) => {
+    this._callback.clickAddToWatchlistButton = callback;
+    this
+      .element
+      .querySelector('.film-details__control-button--watchlist')
+      .addEventListener('click', this.#clickAddToWatchlist);
+  }
+
+  setAlreadyWatched = (callback) => {
+    this._callback.clickAlreadyWatchedButton = callback;
+    this
+      .element
+      .querySelector('.film-details__control-button--watched')
+      .addEventListener('click', this.#clickAlreadyWatched);
+  }
+
+  setAddToFavorite = (callback) => {
+    this._callback.clickAddToFavoriteButton = callback;
+
+    this
+      .element
+      .querySelector('.film-details__control-button--favorite')
+      .addEventListener('click', this.#clickAddToFavorite);
+  }
+
   #clickRemovePopupHandler = () => {
     this._callback.clickRemovePopup();
+  }
+
+  #clickAlreadyWatched = (evt) => {
+    evt.preventDefault();
+
+    this._callback.clickAlreadyWatchedButton();
+  }
+
+  #clickAddToWatchlist = (evt) => {
+    evt.preventDefault();
+
+    this._callback.clickAddToWatchlistButton();
+  }
+
+  #clickAddToFavorite = (evt) => {
+    evt.preventDefault();
+
+    this._callback.clickAddToFavoriteButton();
   }
 }

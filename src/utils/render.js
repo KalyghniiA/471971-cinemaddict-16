@@ -25,7 +25,7 @@ export const createElement = (template) => {
   const newElement = document.createElement('div');
   newElement.innerHTML = template;
 
-  return newElement.firstChild;
+  return newElement.firstElementChild;
 };
 
 export const replace = (newElement, oldElement) => {
@@ -41,8 +41,9 @@ export const replace = (newElement, oldElement) => {
   if (parent === null) {
     throw new Error('Parent element doesn\'t exist');
   }
-
+  const oldScroll = oldChild.scrollTop;
   parent.replaceChild(newChild, oldChild);
+  newChild.scrollTop = oldScroll;
 };
 
 export const remove = (component) => {

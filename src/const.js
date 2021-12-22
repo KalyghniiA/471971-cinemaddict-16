@@ -11,6 +11,12 @@ export const FilmsQuantity = {
   MOST_COMMENTED: 2,
 };
 
+export const FilmsContainer = {
+  MAIN_FILMS: 'main-films',
+  TOP_RATED: 'top-rated',
+  MOST_COMMENTED: 'most-commented',
+};
+
 export const FormateDate = {
   YEAR: 'YYYY',
   FULL: 'D MMMM YYYY',
