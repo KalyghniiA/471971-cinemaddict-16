@@ -69,25 +69,23 @@ export default class FilmPresenter {
     document.addEventListener('keydown', this.#onEscKeyDownHandler);
   }
 
-  #removePopup = () => {
+  #removePopup = (data) => {
     remove(this.#popupComponent);
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscKeyDownHandler);
+    this.#changeData(data);
   }
 
-  #onEscKeyDownHandler = (event) => {
-    if (event.key === 'Escape' || event.key === 'Esc') {
-      event.preventDefault();
-      this.#removePopup();
+  #onEscKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.#removePopup(this.#popupComponent.returnData());//ОБРАТИТЬ ВНИМАНИЕ
       document.removeEventListener('keydown', this.#onEscKeyDownHandler);
     }
   }
 
   #setPopupHandler = () => {
     this.#popupComponent.setRemovePopup(this.#removePopup);
-    this.#popupComponent.setAddToWatchlist(this.#handlerAddToWatchlist);
-    this.#popupComponent.setAlreadyWatched(this.#handlerAlreadyWatched);
-    this.#popupComponent.setAddToFavorite(this.#handlerAddToFavorite);
   }
 
   #handlerAddToWatchlist = () => {

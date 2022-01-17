@@ -180,9 +180,17 @@ export default class FilmsPresenter {
 
   #handleFilmChange = (updateFilm) => {
     this.#filmsData = updateItem(this.#filmsData, updateFilm);
-    this.#mainFilmsMap.get(updateFilm.id).init(updateFilm, this.#commentsData);
-    if (this.#topRatedFilmsMap.has(updateFilm.id) && this.#mostCommentedFilmsMap.has(updateFilm.id)) {
+
+    if (this.#mainFilmsMap.has(updateFilm.id)) {
+      this.#mainFilmsMap.get(updateFilm.id).init(updateFilm, this.#commentsData);
+    }
+
+    if (this.#topRatedFilmsMap.has(updateFilm.id) ){
       this.#topRatedFilmsMap.get(updateFilm.id).init(updateFilm, this.#commentsData);
+    }
+
+    if (this.#mostCommentedFilmsMap.has(updateFilm.id)) {
+
       this.#mostCommentedFilmsMap.get(updateFilm.id).init(updateFilm, this.#commentsData);
     }
   }
