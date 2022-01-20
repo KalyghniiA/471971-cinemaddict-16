@@ -1,6 +1,6 @@
 import {generateFormatDate, getTimeFromMins} from '../utils/date';
 import {FormateDate} from '../const';
-import AbstractComponentView from './abstract-component';
+import SmartView from './smart';
 
 const createGenreElement = (genres) => {
   let elem = '';
@@ -72,12 +72,11 @@ export const createPopupElement = (filmData, commentsData) => {
       writers,
       actors
     },
-    userDetails: {
-      watchlist,
-      alreadyWatched,
-      favorite
-    },
-    comments: commentsId
+    comments: commentsId,
+    isToAlreadyWatched,
+    isToWatchlist,
+    isToFavorite,
+    isEmotionChecked,
   } = filmData;
 
 
@@ -148,9 +147,9 @@ export const createPopupElement = (filmData, commentsData) => {
       </div>
 
       <section class="film-details__controls" data-id-button="${id}">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button  film-details__control-button--watched ${alreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${isToWatchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
+        <button type="button" class="film-details__control-button  film-details__control-button--watched ${isToAlreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
+        <button type="button" class="film-details__control-button film-details__control-button--favorite ${isToFavorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>
       </section>
     </div>
 
@@ -163,29 +162,31 @@ export const createPopupElement = (filmData, commentsData) => {
         </ul>
 
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">
+          ${isEmotionChecked ? `<img src="./images/emoji/${isEmotionChecked}.png" width="55" height="55" alt="emoji">` : ''}
+          </div>
 
           <label class="film-details__comment-label">
             <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
           </label>
 
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${isEmotionChecked === 'smile' ? 'checked' : ''}>
             <label class="film-details__emoji-label" for="emoji-smile">
               <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
             </label>
 
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${isEmotionChecked === 'sleeping' ? 'checked' : ''}>
             <label class="film-details__emoji-label" for="emoji-sleeping">
               <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
             </label>
 
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${isEmotionChecked === 'puke' ? 'checked' : ''}>
             <label class="film-details__emoji-label" for="emoji-puke">
               <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
             </label>
 
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${isEmotionChecked === 'angry' ? 'checked' : ''}>
             <label class="film-details__emoji-label" for="emoji-angry">
               <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
             </label>
@@ -198,18 +199,19 @@ export const createPopupElement = (filmData, commentsData) => {
   );
 };
 
-export default class PopupView extends AbstractComponentView {
-  #filmData = null;
+export default class PopupView extends SmartView {
   #commentsData = null;
 
   constructor (filmData, commentsData) {
     super();
-    this.#filmData = filmData;
+    this._filmData = PopupView.parseFilmToData(filmData);
     this.#commentsData = commentsData;
+
+    this.#setInnerHandlers();
   }
 
   get template () {
-    return createPopupElement(this.#filmData,this.#commentsData);
+    return createPopupElement(this._filmData,this.#commentsData);
   }
 
   setRemovePopup = (callback) => {
@@ -221,50 +223,96 @@ export default class PopupView extends AbstractComponentView {
       .addEventListener('click',this.#clickRemovePopupHandler);
   }
 
-  setAddToWatchlist = (callback) => {
-    this._callback.clickAddToWatchlistButton = callback;
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setRemovePopup(this._callback.clickRemovePopup);
+  }
+
+  #setInnerHandlers = () => {
     this
       .element
       .querySelector('.film-details__control-button--watchlist')
       .addEventListener('click', this.#clickAddToWatchlist);
-  }
-
-  setAlreadyWatched = (callback) => {
-    this._callback.clickAlreadyWatchedButton = callback;
     this
       .element
       .querySelector('.film-details__control-button--watched')
       .addEventListener('click', this.#clickAlreadyWatched);
-  }
-
-  setAddToFavorite = (callback) => {
-    this._callback.clickAddToFavoriteButton = callback;
-
     this
       .element
       .querySelector('.film-details__control-button--favorite')
       .addEventListener('click', this.#clickAddToFavorite);
+    this
+      .element
+      .querySelector('.film-details__emoji-list')
+      .addEventListener('input', this.#clickCommentEmotion);
   }
 
   #clickRemovePopupHandler = () => {
-    this._callback.clickRemovePopup();
+    this._callback.clickRemovePopup(this.returnData());
   }
 
   #clickAlreadyWatched = (evt) => {
     evt.preventDefault();
 
-    this._callback.clickAlreadyWatchedButton();
+    this.updateData({
+      isToAlreadyWatched: !this._filmData.isToAlreadyWatched,
+    });
   }
 
   #clickAddToWatchlist = (evt) => {
     evt.preventDefault();
 
-    this._callback.clickAddToWatchlistButton();
+    this.updateData({
+      isToWatchlist: !this._filmData.isToWatchlist,
+    });
   }
 
   #clickAddToFavorite = (evt) => {
     evt.preventDefault();
 
-    this._callback.clickAddToFavoriteButton();
+    this.updateData({
+      isToFavorite: !this._filmData.isToFavorite,
+    });
   }
+
+  #clickCommentEmotion = (evt) => {
+    this.updateData({
+      isEmotionChecked: evt.target.value,
+    });
+  }
+
+  returnData = () => PopupView.parseDataToFilm(this._filmData)//ОБРАТИТЬ ВНИМАНИЕ
+
+  static parseFilmToData = (film) => ({
+    ...film,
+    isToAlreadyWatched: film.userDetails.alreadyWatched,
+    isToWatchlist: film.userDetails.watchlist,
+    isToFavorite: film.userDetails.favorite,
+    isEmotionChecked: null,
+  })
+
+  static parseDataToFilm = (data) => {
+
+    const film = {...data};
+
+    if (film.userDetails.alreadyWatched !== film.isToAlreadyWatched) {
+      film.userDetails.alreadyWatched = !film.userDetails.alreadyWatched;
+    }
+
+    if (film.userDetails.watchlist !== film.isToWatchlist) {
+      film.userDetails.watchlist = !film.userDetails.watchlist;
+    }
+
+    if (film.userDetails.favorite !== film.isToFavorite) {
+      film.userDetails.favorite = !film.userDetails.favorite;
+    }
+
+    delete film.isToAlreadyWatched;
+    delete film.isToWatchlist;
+    delete film.isToFavorite;
+    delete film.isEmotionChecked;
+
+    return film;
+  }
+
 }

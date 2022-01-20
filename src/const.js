@@ -23,3 +23,8 @@ export const FormateDate = {
   COMMENTS_DATE: 'YYYY/MM/D H:m',
 };
 
+export const SortType = {
+  DEFAULT: 'default',
+  BY_DATE: 'date',
+  BY_RATING: 'rating',
+};
