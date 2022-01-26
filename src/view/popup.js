@@ -74,9 +74,11 @@ export const createPopupElement = (filmData, commentsData) => {
       actors
     },
     comments: commentsId,
-    isToAlreadyWatched,
-    isToWatchlist,
-    isToFavorite,
+    userDetails: {
+      watchlist,
+      alreadyWatched,
+      favorite
+    },
     isEmotionChecked,
   } = filmData;
 
@@ -148,9 +150,9 @@ export const createPopupElement = (filmData, commentsData) => {
       </div>
 
       <section class="film-details__controls" data-id-button="${id}">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${isToWatchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button  film-details__control-button--watched ${isToAlreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite ${isToFavorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
+        <button type="button" class="film-details__control-button  film-details__control-button--watched ${alreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
+        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>
       </section>
     </div>
 
@@ -229,6 +231,32 @@ export default class PopupView extends SmartView {
     this.setRemovePopup(this._callback.clickRemovePopup);
   }
 
+  setAddToWatchlist = (callback) => {
+    this._callback.clickAddToWatchlistButton = callback;
+    this
+      .element
+      .querySelector('.film-details__control-button--watchlist')
+      .addEventListener('click', this.#clickAddToWatchlist);
+  }
+
+  setAlreadyWatched = (callback) => {
+    this._callback.clickAlreadyWatchedButton = callback;
+    this
+      .element
+      .querySelector('.film-details__control-button--watched')
+      .addEventListener('click', this.#clickAlreadyWatched);
+  }
+
+  setAddToFavorite = (callback) => {
+    this._callback.clickAddToFavoriteButton = callback;
+    this
+      .element
+      .querySelector('.film-details__control-button--favorite')
+      .addEventListener('click', this.#clickAddToFavorite);
+  }
+
+  returnData = () => PopupView.parseDataToFilm(this._filmData)
+
   #setInnerHandlers = () => {
     this
       .element
@@ -249,31 +277,22 @@ export default class PopupView extends SmartView {
   }
 
   #clickRemovePopupHandler = () => {
-    this._callback.clickRemovePopup(this.returnData());
+    this._callback.clickRemovePopup();
   }
 
   #clickAlreadyWatched = (evt) => {
     evt.preventDefault();
-
-    this.updateData({
-      isToAlreadyWatched: !this._filmData.isToAlreadyWatched,
-    });
+    this._callback.clickAlreadyWatchedButton();
   }
 
   #clickAddToWatchlist = (evt) => {
     evt.preventDefault();
-
-    this.updateData({
-      isToWatchlist: !this._filmData.isToWatchlist,
-    });
+    this._callback.clickAddToWatchlistButton();
   }
 
   #clickAddToFavorite = (evt) => {
     evt.preventDefault();
-
-    this.updateData({
-      isToFavorite: !this._filmData.isToFavorite,
-    });
+    this._callback.clickAddToFavoriteButton();
   }
 
   #clickCommentEmotion = (evt) => {
@@ -282,13 +301,9 @@ export default class PopupView extends SmartView {
     });
   }
 
-  returnData = () => PopupView.parseDataToFilm(this._filmData)//ОБРАТИТЬ ВНИМАНИЕ
 
   static parseFilmToData = (film) => ({
     ...film,
-    isToAlreadyWatched: film.userDetails.alreadyWatched,
-    isToWatchlist: film.userDetails.watchlist,
-    isToFavorite: film.userDetails.favorite,
     isEmotionChecked: null,
   })
 
@@ -296,21 +311,6 @@ export default class PopupView extends SmartView {
 
     const film = {...data};
 
-    if (film.userDetails.alreadyWatched !== film.isToAlreadyWatched) {
-      film.userDetails.alreadyWatched = !film.userDetails.alreadyWatched;
-    }
-
-    if (film.userDetails.watchlist !== film.isToWatchlist) {
-      film.userDetails.watchlist = !film.userDetails.watchlist;
-    }
-
-    if (film.userDetails.favorite !== film.isToFavorite) {
-      film.userDetails.favorite = !film.userDetails.favorite;
-    }
-
-    delete film.isToAlreadyWatched;
-    delete film.isToWatchlist;
-    delete film.isToFavorite;
     delete film.isEmotionChecked;
 
     return film;

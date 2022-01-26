@@ -12,7 +12,7 @@ export default class SmartView extends AbstractComponentView {
       return;
     }
 
-   this._filmData = {...this._filmData, ...update};
+    this._filmData = {...this._filmData, ...update};
 
     this.updateElement();
   }

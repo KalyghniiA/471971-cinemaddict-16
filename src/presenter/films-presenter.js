@@ -83,11 +83,13 @@ export default class FilmsPresenter {
 
     switch (this.#sortingType) {
       case SortType.BY_DATE:
+        console.log('2')
         return filteredFilms.sort((prev, next) => dayjs(prev.filmInfo.release.date).diff(next.filmInfo.release.date));
       case SortType.BY_RATING:
+        console.log('3')
         return filteredFilms.sort((prev, next) => next.filmInfo.totalRating - prev.filmInfo.totalRating);
     }
-
+    console.log('1');
     return filteredFilms;
   }
 
@@ -273,7 +275,6 @@ export default class FilmsPresenter {
         this.#renderBoard();
     }
   }
-
 
   #handleSortChange = (evt) => {
     const elem = evt.target;

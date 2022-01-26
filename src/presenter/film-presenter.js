@@ -30,7 +30,7 @@ export default class FilmPresenter {
     this.#popupComponent = new PopupView(this.#filmData, this.#commentsData);
 
     this.#setFilmHandler();
-    //this.#setPopupHandler();
+    this.#setPopupHandler();
 
     if (prevFilmComponent === null || prevPopupComponent === null) {
       render(this.#container, this.#filmComponent);
@@ -55,43 +55,45 @@ export default class FilmPresenter {
   }
 
   #setFilmHandler = () => {
-    //this.#filmComponent.setOpenPopup(this.#openPopup);
+    this.#filmComponent.setOpenPopup(this.#openPopup);
     this.#filmComponent.setAddToWatchlist(this.#handlerAddToWatchlist);
     this.#filmComponent.setAlreadyWatched(this.#handlerAlreadyWatched);
     this.#filmComponent.setAddToFavorite(this.#handlerAddToFavorite);
   }
 
-  /*
   #openPopup = () => {
     if (document.querySelector('.film-details')) {
       document.querySelector('.film-details').remove();
     }
-
+    this.#popupComponent.restoreHandlers();
     this.#setPopupHandler();
     render(document.body, this.#popupComponent);
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDownHandler);
   }
 
-  #removePopup = (data) => {
+  #removePopup = () => {
     remove(this.#popupComponent);
+
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscKeyDownHandler);
-    this.#changeData(UserAction.UPDATE_FILM_DETAILS, UpdateType.PATCH ,data);
   }
 
   #onEscKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#removePopup(this.#popupComponent.returnData());//ОБРАТИТЬ ВНИМАНИЕ
+      this.#removePopup();
       document.removeEventListener('keydown', this.#onEscKeyDownHandler);
     }
   }
 
   #setPopupHandler = () => {
     this.#popupComponent.setRemovePopup(this.#removePopup);
+    this.#popupComponent.setAddToWatchlist(this.#handlerAddToWatchlist);
+    this.#popupComponent.setAlreadyWatched(this.#handlerAlreadyWatched);
+    this.#popupComponent.setAddToFavorite(this.#handlerAddToFavorite);
   }
-*/
+
   #handlerAddToWatchlist = () => {
     if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
       this.#changeData(
