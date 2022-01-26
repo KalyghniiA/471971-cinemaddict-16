@@ -1,6 +1,7 @@
 import FilmsCardView from '../view/film-card';
 import {remove, render, replace} from '../utils/render';
 import PopupView from '../view/popup';
+import {NavigationActionType, UpdateType, UserAction} from '../const';
 
 export default class FilmPresenter {
   #container = null;
@@ -9,16 +10,18 @@ export default class FilmPresenter {
   #filmComponent = null;
   #popupComponent = null;
   #changeData = null;
+  #filmsModel = null;
 
   constructor (changeData, container) {
     this.#container = container;
     this.#changeData = changeData;
   }
 
-  init = (filmData, commentsData) => {
+  init = (filmData, commentsData, filmsModel) => {
 
     this.#filmData = filmData;
     this.#commentsData = commentsData;
+    this.#filmsModel = filmsModel;
 
 
     const prevFilmComponent = this.#filmComponent;
@@ -27,7 +30,7 @@ export default class FilmPresenter {
     this.#popupComponent = new PopupView(this.#filmData, this.#commentsData);
 
     this.#setFilmHandler();
-    this.#setPopupHandler();
+    //this.#setPopupHandler();
 
     if (prevFilmComponent === null || prevPopupComponent === null) {
       render(this.#container, this.#filmComponent);
@@ -52,12 +55,13 @@ export default class FilmPresenter {
   }
 
   #setFilmHandler = () => {
-    this.#filmComponent.setOpenPopup(this.#openPopup);
+    //this.#filmComponent.setOpenPopup(this.#openPopup);
     this.#filmComponent.setAddToWatchlist(this.#handlerAddToWatchlist);
     this.#filmComponent.setAlreadyWatched(this.#handlerAlreadyWatched);
     this.#filmComponent.setAddToFavorite(this.#handlerAddToFavorite);
   }
 
+  /*
   #openPopup = () => {
     if (document.querySelector('.film-details')) {
       document.querySelector('.film-details').remove();
@@ -73,7 +77,7 @@ export default class FilmPresenter {
     remove(this.#popupComponent);
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscKeyDownHandler);
-    this.#changeData(data);
+    this.#changeData(UserAction.UPDATE_FILM_DETAILS, UpdateType.PATCH ,data);
   }
 
   #onEscKeyDownHandler = (evt) => {
@@ -87,41 +91,89 @@ export default class FilmPresenter {
   #setPopupHandler = () => {
     this.#popupComponent.setRemovePopup(this.#removePopup);
   }
-
+*/
   #handlerAddToWatchlist = () => {
-    this.#changeData(
-      {
-        ...this.#filmData,
-        userDetails: {
-          ...this.#filmData.userDetails,
-          watchlist: !this.#filmData.userDetails.watchlist
+    if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
+      this.#changeData(
+        UserAction.UPDATE_FILM_DETAILS,
+        UpdateType.PATCH,
+        {
+          ...this.#filmData,
+          userDetails: {
+            ...this.#filmData.userDetails,
+            watchlist: !this.#filmData.userDetails.watchlist
+          }
         }
-      }
-    );
+      );
+    } else {
+      this.#changeData(
+        UserAction.UPDATE_FILM_DETAILS,
+        UpdateType.MINOR,
+        {
+          ...this.#filmData,
+          userDetails: {
+            ...this.#filmData.userDetails,
+            watchlist: !this.#filmData.userDetails.watchlist
+          }
+        }
+      );
+    }
   }
 
   #handlerAlreadyWatched = () => {
-    this.#changeData(
-      {
-        ...this.#filmData,
-        userDetails: {
-          ...this.#filmData.userDetails,
-          alreadyWatched: !this.#filmData.userDetails.alreadyWatched
+    if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
+      this.#changeData(
+        UserAction.UPDATE_FILM_DETAILS,
+        UpdateType.PATCH,
+        {
+          ...this.#filmData,
+          userDetails: {
+            ...this.#filmData.userDetails,
+            alreadyWatched: !this.#filmData.userDetails.alreadyWatched
+          }
         }
-      }
-    );
+      );
+    } else {
+      this.#changeData(
+        UserAction.UPDATE_FILM_DETAILS,
+        UpdateType.MINOR,
+        {
+          ...this.#filmData,
+          userDetails: {
+            ...this.#filmData.userDetails,
+            alreadyWatched: !this.#filmData.userDetails.alreadyWatched
+          }
+        }
+      );
+    }
   }
 
   #handlerAddToFavorite = () => {
-    this.#changeData(
-      {
-        ...this.#filmData,
-        userDetails: {
-          ...this.#filmData.userDetails,
-          favorite: !this.#filmData.userDetails.favorite
+    if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
+      this.#changeData(
+        UserAction.UPDATE_FILM_DETAILS,
+        UpdateType.PATCH,
+        {
+          ...this.#filmData,
+          userDetails: {
+            ...this.#filmData.userDetails,
+            favorite: !this.#filmData.userDetails.favorite
+          }
         }
-      }
-    );
+      );
+    } else {
+      this.#changeData(
+        UserAction.UPDATE_FILM_DETAILS,
+        UpdateType.MINOR,
+        {
+          ...this.#filmData,
+          userDetails: {
+            ...this.#filmData.userDetails,
+            favorite: !this.#filmData.userDetails.favorite
+          }
+        }
+      );
+    }
   }
 
 

@@ -28,3 +28,25 @@ export const SortType = {
   BY_DATE: 'date',
   BY_RATING: 'rating',
 };
+
+export const UserAction = {
+  UPDATE_FILM_DETAILS : 'UPDATE_FILM_DETAILS',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+export const UpdateType = {
+  PRE_PATCH: 'PRE_PATCH',
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export const NavigationActionType = {
+  ALL_MOVIES: 'ALL_MOVIES',
+  WATCHLIST: 'WATCHLIST',
+  HISTORY: 'HISTORY',
+  FAVORITES: 'FAVORITES',
+  STATS: 'STATS',
+};
+

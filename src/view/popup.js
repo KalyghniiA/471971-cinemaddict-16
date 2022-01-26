@@ -23,11 +23,12 @@ const gettingComments = (data, id) => {
   return arr;
 };
 
-const createCommentsElement = (data) => {
+const createCommentsElement = (data, filmId) => {
   let element = '';
 
   for (let i = 0; i < data.length; i++) {
     const {
+      id,
       author,
       comments: text,
       date: time,
@@ -35,7 +36,7 @@ const createCommentsElement = (data) => {
     } = data[i];
 
     element += `
-      <li class="film-details__comment">
+      <li class="film-details__comment" data-id-film="${filmId}" data-id-comments="${id}">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-sleeping">
             </span>
@@ -158,7 +159,7 @@ export const createPopupElement = (filmData, commentsData) => {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsId.length}</span></h3>
 
         <ul class="film-details__comments-list">
-            ${createCommentsElement(comments)}
+            ${createCommentsElement(comments, id)}
         </ul>
 
         <div class="film-details__new-comment">
