@@ -255,7 +255,11 @@ export default class PopupView extends SmartView {
       .addEventListener('click', this.#clickAddToFavorite);
   }
 
-  returnData = () => PopupView.parseDataToFilm(this._filmData)
+  reset = () => {
+    this.updateData(
+      PopupView.parseFilmToData(this._filmData)
+      );
+  }
 
   #setInnerHandlers = () => {
     this

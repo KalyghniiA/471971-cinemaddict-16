@@ -12,6 +12,8 @@ export default class FilmPresenter {
   #changeData = null;
   #filmsModel = null;
 
+
+
   constructor (changeData, container) {
     this.#container = container;
     this.#changeData = changeData;
@@ -73,6 +75,7 @@ export default class FilmPresenter {
   }
 
   #removePopup = () => {
+    this.#popupComponent.reset();
     remove(this.#popupComponent);
 
     document.body.classList.remove('hide-overflow');
