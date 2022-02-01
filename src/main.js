@@ -3,6 +3,8 @@ import ProfileView from './view/profile';
 import {generateComment, generateMocks} from './mock';
 import FilmsPresenter from './presenter/films-presenter';
 import FilmsModel from './model/films-model';
+import {filter} from './utils/filter';
+import {NavigationActionType} from './const';
 
 
 //Data
@@ -21,8 +23,8 @@ filmsModel.comments = commentsData;
 
 //=>Header
 const headerContainerElement = document.querySelector('.header');
-
-render(headerContainerElement, new ProfileView());
+const profileValue = filter[NavigationActionType.HISTORY](filmsModel.films).length;
+render(headerContainerElement, new ProfileView(profileValue));
 //=> MainContainer
 
 const movie = new FilmsPresenter(document.querySelector('.main'),filmsModel);

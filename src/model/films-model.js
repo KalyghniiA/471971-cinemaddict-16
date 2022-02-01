@@ -44,11 +44,13 @@ export default class FilmsModel extends AbstractObservable {
     this._notify(updateType, navigation);
   }
 
-  /*addComments = (updateType, update) => {
+  addComment = (updateType, update) => {
+    const newComment = update.newComment;
+    this.#comments = [...this.#comments, newComment];
+    update.comments.push(newComment.id);
 
- }*/
+    delete update.newComment;
 
-  deleteComment = (updateType, update) => {
     const index = this.#films.findIndex((film) => film.id === update.id);
 
     this.#films = [
@@ -56,6 +58,33 @@ export default class FilmsModel extends AbstractObservable {
       update,
       ...this.#films.slice(index + 1)
     ];
+
+    this._notify(updateType, update);
+  }
+
+  deleteComment = (updateType, update) => {
+    const {commentId} = update;
+
+    const commentIndex = this.#comments.findIndex((comment) => comment.id === commentId);
+
+    this.#comments = [
+      ...this.#comments.slice(0, commentIndex),
+      ...this.#comments.slice(commentIndex + 1)
+    ];
+
+    const commentsCurrentFilms = update.comments;
+    const filteredComments = commentsCurrentFilms.filter((comment) => comment !== update.commentId);
+    delete update.commentId;
+    update.comments = filteredComments;
+
+    const index = this.#films.findIndex((film) => film.id === update.id);
+
+    this.#films = [
+      ...this.#films.slice(0, index),
+      update,
+      ...this.#films.slice(index + 1)
+    ];
+
 
     this._notify(updateType, update);
   }

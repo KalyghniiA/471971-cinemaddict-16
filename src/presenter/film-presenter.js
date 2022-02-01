@@ -2,6 +2,7 @@ import FilmsCardView from '../view/film-card';
 import {remove, render, replace} from '../utils/render';
 import PopupView from '../view/popup';
 import {NavigationActionType, UpdateType, UserAction} from '../const';
+import NewCommentPopup from '../view/new-comment-popup';
 
 export default class FilmPresenter {
   #container = null;
@@ -9,9 +10,9 @@ export default class FilmPresenter {
   #commentsData = null;
   #filmComponent = null;
   #popupComponent = null;
+  #newCommentComponent = null;
   #changeData = null;
   #filmsModel = null;
-
 
 
   constructor (changeData, container) {
@@ -31,6 +32,7 @@ export default class FilmPresenter {
     const prevPopupComponent = this.#popupComponent;
     this.#popupComponent = new PopupView(this.#filmData, this.#commentsData);
 
+
     this.#setFilmHandler();
     this.#setPopupHandler();
 
@@ -45,6 +47,8 @@ export default class FilmPresenter {
 
     if (document.body.contains(prevPopupComponent.element)) {
       replace(this.#popupComponent, prevPopupComponent);
+      render(this.#popupComponent.element.querySelector('.film-details__comments-wrap'), this.#newCommentComponent);
+      this.#popupComponent.restoreHandlers();
     }
 
     remove(prevFilmComponent);
@@ -70,12 +74,16 @@ export default class FilmPresenter {
     this.#popupComponent.restoreHandlers();
     this.#setPopupHandler();
     render(document.body, this.#popupComponent);
+    this.#newCommentComponent = new NewCommentPopup();
+    this.#newCommentComponent.setAddEmotion();
+    this.#newCommentComponent.setAddCommentText();
+    this.#newCommentComponent.setSubmitComment(this.#handlerAddComment);
+    render(this.#popupComponent.element.querySelector('.film-details__comments-wrap'), this.#newCommentComponent);
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDownHandler);
   }
 
   #removePopup = () => {
-    this.#popupComponent.reset();
     remove(this.#popupComponent);
 
     document.body.classList.remove('hide-overflow');
@@ -95,6 +103,7 @@ export default class FilmPresenter {
     this.#popupComponent.setAddToWatchlist(this.#handlerAddToWatchlist);
     this.#popupComponent.setAlreadyWatched(this.#handlerAlreadyWatched);
     this.#popupComponent.setAddToFavorite(this.#handlerAddToFavorite);
+    this.#popupComponent.setDeleteComment(this.#handlerDeleteComment);
   }
 
   #handlerAddToWatchlist = () => {
@@ -181,6 +190,20 @@ export default class FilmPresenter {
     }
   }
 
+  #handlerDeleteComment = (commentId) => {
+    this.#changeData(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      {...this.#filmData, commentId: commentId}
+    );
+  }
 
+  #handlerAddComment = (newComment) => {
+    this.#changeData(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      {...this.#filmData, newComment: newComment}
+    );
+  }
 }
 

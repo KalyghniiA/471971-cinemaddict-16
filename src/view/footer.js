@@ -2,7 +2,7 @@ import AbstractComponentView from './abstract-component';
 
 const createStatisticElement = (data) => `<p>${data.length} movies inside</p>`;
 
-export default class StatisticsView extends AbstractComponentView {
+export default class FooterView extends AbstractComponentView {
   #data = null
 
   constructor (data) {

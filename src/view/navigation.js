@@ -8,7 +8,7 @@ const createNavigationElement = (data, userAction) => (`<nav class="main-navigat
       <a href="#history" data-type="${NavigationActionType.HISTORY}" class="main-navigation__item ${userAction === NavigationActionType.HISTORY ? 'main-navigation__item--active' : ''}">History <span class="main-navigation__item-count">${data.find((elem) => elem.type === NavigationActionType.HISTORY).count}</span></a>
       <a href="#favorites" data-type="${NavigationActionType.FAVORITES}" class="main-navigation__item ${userAction === NavigationActionType.FAVORITES ? 'main-navigation__item--active' : ''}">Favorites <span class="main-navigation__item-count">${data.find((elem) => elem.type === NavigationActionType.FAVORITES).count}</span></a>
     </div>
-    <a href="#stats" class="main-navigation__additional ${userAction === NavigationActionType.STATS ? 'main-navigation__item--active' : ''}">Stats</a>
+    <a href="#stats" data-type="${NavigationActionType.STATS}" class="main-navigation__additional ${userAction === NavigationActionType.STATS ? 'main-navigation__item--active' : ''}">Stats</a>
   </nav>`);
 
 export default class NavigationView extends AbstractComponentView{
@@ -55,6 +55,6 @@ export default class NavigationView extends AbstractComponentView{
 
   #clickStatsHandler = (evt) => {
     evt.preventDefault();
-    this._callback.clickStats();
+    this._callback.clickStats(evt.target.dataset.type);
   }
 }

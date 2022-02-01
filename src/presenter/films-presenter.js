@@ -14,12 +14,13 @@ import {
   UserAction
 } from '../const';
 import FilmsListContainerView from '../view/films-list-container';
-import StatisticsView from '../view/statistics';
 import ButtonShowMoreView from '../view/show-more-button';
 import FilmPresenter from './film-presenter';
 import dayjs from 'dayjs';
 import {filter} from '../utils/filter';
 import NavigationView from '../view/navigation';
+import FooterView from '../view/footer';
+import StatisticsView from '../view/stats';
 
 
 const FILM_CARD_COUNT_PER_STEP = 5;
@@ -38,6 +39,8 @@ export default class FilmsPresenter {
   #buttonShowMoreComponent = new ButtonShowMoreView();
   #sortComponent = null;
   #navigationComponent = null;
+  #statsComponent = null;
+
 
   #renderedFilmsCount = FILM_CARD_COUNT_PER_STEP;
   #mainFilmsMap = new Map();
@@ -83,13 +86,10 @@ export default class FilmsPresenter {
 
     switch (this.#sortingType) {
       case SortType.BY_DATE:
-        console.log('2')
         return filteredFilms.sort((prev, next) => dayjs(prev.filmInfo.release.date).diff(next.filmInfo.release.date));
       case SortType.BY_RATING:
-        console.log('3')
         return filteredFilms.sort((prev, next) => next.filmInfo.totalRating - prev.filmInfo.totalRating);
     }
-    console.log('1');
     return filteredFilms;
   }
 
@@ -99,13 +99,14 @@ export default class FilmsPresenter {
 
   init = () => {
     this.#renderBoard();
-    this.#renderStatistics();
+    this.#renderFooter();
   }
 
   #renderNavigation = () => {
 
     this.#navigationComponent = new NavigationView(this.filters, this.#filmsModel.navigation);
     this.#navigationComponent.setNavigationClick(this.#handleNavigationTypeClick);
+    this.#navigationComponent.setStatsClick(this.#handleStatsClick);
     render(this.#mainContainer, this.#navigationComponent, Position.AFTERBEGIN);
   }
 
@@ -209,9 +210,16 @@ export default class FilmsPresenter {
     this.#renderFilms();
   }
 
-  #renderStatistics = () => {
+  #renderStats = () => {
+    this.#renderNavigation();
+    this.#statsComponent = new StatisticsView(this.films);
+    this.#statsComponent.restoreHandlers();
+    render(this.#mainContainer, this.#statsComponent);
+  }
+
+  #renderFooter = () => {
     const footerStatisticsElement = document.querySelector('.footer__statistics');
-    render(footerStatisticsElement, new StatisticsView(this.films));
+    render(footerStatisticsElement, new FooterView(this.films));
   }
 
   #clearFilms = () => {
@@ -240,6 +248,11 @@ export default class FilmsPresenter {
     if (this.#listNoEmptyComponent) {
       remove(this.#listNoEmptyComponent);
     }
+
+    if (this.#statsComponent) {
+      this.#clearStats();
+    }
+
     this.#clearFilms();
   }
 
@@ -247,10 +260,20 @@ export default class FilmsPresenter {
     remove(this.#navigationComponent);
   }
 
+  #clearStats = () => {
+    remove(this.#statsComponent);
+  }
+
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_FILM_DETAILS:
         this.#filmsModel.updateFilm(updateType, update);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this.#filmsModel.deleteComment(updateType, update);
+        break;
+      case UserAction.ADD_COMMENT:
+        this.#filmsModel.addComment(updateType, update);
         break;
     }
   }
@@ -273,6 +296,10 @@ export default class FilmsPresenter {
       case UpdateType.MINOR:
         this.#clearBoard();
         this.#renderBoard();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearBoard();
+        this.#renderStats();
     }
   }
 
@@ -306,6 +333,14 @@ export default class FilmsPresenter {
     }
 
     this.#filmsModel.setNavigation(UpdateType.MINOR, navigationType);
+  }
+
+  #handleStatsClick = (navigationType) => {
+    if (this.#filmsModel.navigation === navigationType) {
+      return;
+    }
+
+    this.#filmsModel.setNavigation(UpdateType.MAJOR, navigationType);
   }
 
 }

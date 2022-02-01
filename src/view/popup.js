@@ -36,7 +36,7 @@ const createCommentsElement = (data, filmId) => {
     } = data[i];
 
     element += `
-      <li class="film-details__comment" data-id-film="${filmId}" data-id-comments="${id}">
+      <li class="film-details__comment" data-id-film="${filmId}" data-id-comment="${id}">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-sleeping">
             </span>
@@ -45,7 +45,7 @@ const createCommentsElement = (data, filmId) => {
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
                 <span class="film-details__comment-day">${generateFormatDate(time, FormateDate.COMMENTS_DATE)}</span>
-                <button class="film-details__comment-delete">Delete</button>
+                <button class="film-details__comment-delete" data-id-comment="${id}">Delete</button>
               </p>
             </div>
           </li>`;
@@ -53,7 +53,7 @@ const createCommentsElement = (data, filmId) => {
   return element;
 };
 
-export const createPopupElement = (filmData, commentsData) => {
+const createPopupElement = (filmData, commentsData) => {
   const {
     id,
     filmInfo:{
@@ -79,7 +79,6 @@ export const createPopupElement = (filmData, commentsData) => {
       alreadyWatched,
       favorite
     },
-    isEmotionChecked,
   } = filmData;
 
 
@@ -164,37 +163,7 @@ export const createPopupElement = (filmData, commentsData) => {
             ${createCommentsElement(comments, id)}
         </ul>
 
-        <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label">
-          ${isEmotionChecked ? `<img src="./images/emoji/${isEmotionChecked}.png" width="55" height="55" alt="emoji">` : ''}
-          </div>
 
-          <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-          </label>
-
-          <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${isEmotionChecked === 'smile' ? 'checked' : ''}>
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${isEmotionChecked === 'sleeping' ? 'checked' : ''}>
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${isEmotionChecked === 'puke' ? 'checked' : ''}>
-            <label class="film-details__emoji-label" for="emoji-puke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${isEmotionChecked === 'angry' ? 'checked' : ''}>
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
-          </div>
-        </div>
       </section>
     </div>
   </form>
@@ -203,18 +172,19 @@ export const createPopupElement = (filmData, commentsData) => {
 };
 
 export default class PopupView extends SmartView {
+  #filmData = null;
   #commentsData = null;
 
   constructor (filmData, commentsData) {
     super();
-    this._filmData = PopupView.parseFilmToData(filmData);
+    this.#filmData = filmData;
     this.#commentsData = commentsData;
 
     this.#setInnerHandlers();
   }
 
   get template () {
-    return createPopupElement(this._filmData,this.#commentsData);
+    return createPopupElement(this.#filmData,this.#commentsData);
   }
 
   setRemovePopup = (callback) => {
@@ -255,10 +225,14 @@ export default class PopupView extends SmartView {
       .addEventListener('click', this.#clickAddToFavorite);
   }
 
-  reset = () => {
-    this.updateData(
-      PopupView.parseFilmToData(this._filmData)
-      );
+  setDeleteComment = (callback) => {
+    this._callback.deleteComment = callback;
+    this
+      .element
+      .querySelectorAll('.film-details__comment-delete')
+      .forEach((comment) => {
+        comment.addEventListener('click', this.#clickDeleteComment);
+      });
   }
 
   #setInnerHandlers = () => {
@@ -274,10 +248,7 @@ export default class PopupView extends SmartView {
       .element
       .querySelector('.film-details__control-button--favorite')
       .addEventListener('click', this.#clickAddToFavorite);
-    this
-      .element
-      .querySelector('.film-details__emoji-list')
-      .addEventListener('input', this.#clickCommentEmotion);
+
   }
 
   #clickRemovePopupHandler = () => {
@@ -299,25 +270,10 @@ export default class PopupView extends SmartView {
     this._callback.clickAddToFavoriteButton();
   }
 
-  #clickCommentEmotion = (evt) => {
-    this.updateData({
-      isEmotionChecked: evt.target.value,
-    });
+  #clickDeleteComment = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteComment(evt.target.dataset.idComment);
   }
 
-
-  static parseFilmToData = (film) => ({
-    ...film,
-    isEmotionChecked: null,
-  })
-
-  static parseDataToFilm = (data) => {
-
-    const film = {...data};
-
-    delete film.isEmotionChecked;
-
-    return film;
-  }
 
 }
