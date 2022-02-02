@@ -143,6 +143,7 @@ export default class NewCommentPopup extends SmartView {
         this.element.querySelector('.film-details__comment-input').setCustomValidity('Требуется заполнить комментарий и указать эмоцию');
         return;
       }
+
       this.#keyHandler.enter = null;
       this.#keyHandler.control = null;
       this._callback.submitComment(this.ParseDataToComment(this._data));

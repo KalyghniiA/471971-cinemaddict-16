@@ -94,9 +94,11 @@ export default class FilmsCardView extends AbstractComponentView {
   }
 
   #clickCardHandler = (evt) => {
+
     evt.preventDefault();
 
-    this._callback.clickCardElement();
+    this._callback.clickCardElement(evt);
+
   }
 
   #clickAlreadyWatched = (evt) => {

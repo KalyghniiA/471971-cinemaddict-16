@@ -27,6 +27,11 @@ export default class FilmsModel extends AbstractObservable {
     return this.#navigation;
   }
 
+  setNavigation = (updateType, navigation) => {
+    this.#navigation = navigation;
+    this._notify(updateType, navigation);
+  }
+
   updateFilm = (updateType, update) => {
     const index = this.#films.findIndex((film) => film.id === update.id);
 
@@ -37,11 +42,6 @@ export default class FilmsModel extends AbstractObservable {
     ];
 
     this._notify(updateType, update);
-  }
-
-  setNavigation = (updateType, navigation) => {
-    this.#navigation = navigation;
-    this._notify(updateType, navigation);
   }
 
   addComment = (updateType, update) => {
