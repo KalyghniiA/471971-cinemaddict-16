@@ -5,6 +5,7 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {filterStats} from '../utils/filter';
 import {getTimeFromMins} from '../utils/date';
+import {getUserRank} from '../utils/util';
 
 const renderChart = (statisticCtx, films) => {
   const historyMovies = getGenreHistoryFilms(films, 'genres', 'counts');
@@ -100,9 +101,6 @@ const createStatisticsTemplate = (films, currentFilterType) => {
   const historyMovies = getGenreHistoryFilms(films);
 
   const topGenre = historyMovies.genres[0];
-
-  const userRating = document.querySelector('.profile__rating').textContent;
-
   const countHistoryMovies = getCountHistoryFilms(films);
 
   return (
@@ -110,7 +108,7 @@ const createStatisticsTemplate = (films, currentFilterType) => {
   <p class="statistic__rank">
     Your rank
     <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-    <span class="statistic__rank-label">${userRating}</span>
+    <span class="statistic__rank-label">${getUserRank(films.length)}</span>
   </p>
     ${createFilterTemplate(currentFilterType)}
   <ul class="statistic__text-list">

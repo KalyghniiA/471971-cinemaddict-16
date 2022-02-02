@@ -64,7 +64,7 @@ export default class FilmPresenter {
     if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.PATCH,
+        UpdateType.PRE_PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -76,7 +76,7 @@ export default class FilmPresenter {
     } else {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -92,7 +92,7 @@ export default class FilmPresenter {
     if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.PATCH,
+        UpdateType.PRE_PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -104,7 +104,7 @@ export default class FilmPresenter {
     } else {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -120,7 +120,7 @@ export default class FilmPresenter {
     if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.PATCH,
+        UpdateType.PRE_PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -132,7 +132,7 @@ export default class FilmPresenter {
     } else {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         {
           ...this.#filmData,
           userDetails: {

@@ -1,3 +1,5 @@
+import {UserRanks} from '../const';
+
 export const getRandomElementInArray = (items) => items[Math.floor(Math.random() * items.length)];
 
 export const getRandomFloat = (start, end, precision) => (Math.random() * (end - start) + start).toFixed(precision);
@@ -19,14 +21,11 @@ export const deleteItemInArray = (items, update) => {
 
 };
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-  if (index === -1) {
-    return items;
+export const getUserRank = (value) => {
+  for (const {name, min, max} of UserRanks) {
+    if (value >= min && value <= max) {
+      return name;
+    }
   }
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
 };
+

@@ -198,6 +198,7 @@ export default class PopupView extends SmartView {
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.setDeleteComment(this._callback.deleteComment);
     this.setRemovePopup(this._callback.clickRemovePopup);
   }
 

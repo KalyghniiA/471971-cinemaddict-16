@@ -77,20 +77,20 @@ export default class PopupPresenter {
     this.#popupComponent.setAddToWatchlist(this.#handlerAddToWatchlist);
     this.#popupComponent.setAlreadyWatched(this.#handlerAlreadyWatched);
     this.#popupComponent.setAddToFavorite(this.#handlerAddToFavorite);
+    this.#popupComponent.setDeleteComment(this.#handlerDeleteComment);
   }
 
   #setNewCommentHandler = () => {
     this.#newCommentComponent.setAddEmotion();
     this.#newCommentComponent.setAddCommentText();
     this.#newCommentComponent.setSubmitComment(this.#handlerAddComment);
-    this.#popupComponent.setDeleteComment(this.#handlerDeleteComment);
   }
 
   #handlerAddToWatchlist = () => {
     if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.PATCH,
+        UpdateType.PRE_PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -102,7 +102,7 @@ export default class PopupPresenter {
     } else {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -118,7 +118,7 @@ export default class PopupPresenter {
     if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.PATCH,
+        UpdateType.PRE_PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -130,7 +130,7 @@ export default class PopupPresenter {
     } else {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -146,7 +146,7 @@ export default class PopupPresenter {
     if (this.#filmsModel.navigation === NavigationActionType.ALL_MOVIES) {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.PATCH,
+        UpdateType.PRE_PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -158,7 +158,7 @@ export default class PopupPresenter {
     } else {
       this.#changeData(
         UserAction.UPDATE_FILM_DETAILS,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         {
           ...this.#filmData,
           userDetails: {
@@ -173,7 +173,7 @@ export default class PopupPresenter {
   #handlerDeleteComment = (commentId) => {
     this.#changeData(
       UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
+      UpdateType.PRE_PATCH,
       {...this.#filmData, commentId: commentId}
     );
   }
@@ -181,7 +181,7 @@ export default class PopupPresenter {
   #handlerAddComment = (newComment) => {
     this.#changeData(
       UserAction.ADD_COMMENT,
-      UpdateType.PATCH,
+      UpdateType.PRE_PATCH,
       {...this.#filmData, newComment: newComment}
     );
   }
