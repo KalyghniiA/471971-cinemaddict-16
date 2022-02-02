@@ -1,7 +1,7 @@
 import SmartView from './smart';
 import {nanoid} from 'nanoid';
 import dayjs from 'dayjs';
-
+import he from 'he';
 //
 const createNewCommentElement = (data) => {
   const {commentEmotion, commentText} = data;
@@ -12,7 +12,7 @@ const createNewCommentElement = (data) => {
           </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${commentText ? commentText : ''}</textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${commentText ? he.encode(commentText) : ''}</textarea>
           </label>
 
           <div class="film-details__emoji-list">

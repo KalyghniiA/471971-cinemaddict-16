@@ -1,7 +1,7 @@
 import AbstractComponentView from './abstract-component';
 
-const createEmptyListElement = () => (`<section class="films-list">
-      <h2 class="films-list__title">There are no movies in our database</h2>
+const createEmptyListElement = (text) => (`<section class="films-list">
+      <h2 class="films-list__title">${text}</h2>
 
       <!--
         Значение отображаемого текста зависит от выбранного фильтра:
@@ -13,7 +13,14 @@ const createEmptyListElement = () => (`<section class="films-list">
     </section>`);
 
 export default class ListEmptyView extends AbstractComponentView{
+  #text = null;
+
+  constructor(text) {
+    super();
+    this.#text = text;
+  }
+
   get template () {
-    return createEmptyListElement();
+    return createEmptyListElement(this.#text);
   }
 }

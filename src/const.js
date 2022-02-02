@@ -58,7 +58,7 @@ export const SortStatsType = {
   YEAR: 'year',
 };
 
-export const userRanks = [
+export const UserRanks = [
   {
     name: 'Novice',
     min: 1,
@@ -76,4 +76,10 @@ export const userRanks = [
   },
 ];
 
-
+export const NoEmptyListText = {
+  [NavigationActionType.ALL_MOVIES]:'There are no movies in our database',
+  [NavigationActionType.FAVORITES]:'There are no favorite movies now',
+  [NavigationActionType.HISTORY]:'There are no watched movies now',
+  [NavigationActionType.WATCHLIST]:'There are no movies to watch now',
+  [NavigationActionType.STATS]:'',
+};
