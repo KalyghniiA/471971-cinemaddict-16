@@ -1,7 +1,7 @@
 import AbstractComponentView from './abstract-component';
 
 export default class SmartView extends AbstractComponentView {
-  _filmData = {}
+  _data= {}
 
   restoreHandlers = () => {
     throw new Error('Can\'t instantiate SmartView, only concrete one.');
@@ -12,7 +12,7 @@ export default class SmartView extends AbstractComponentView {
       return;
     }
 
-   this._filmData = {...this._filmData, ...update};
+    this._data = {...this._data, ...update};
 
     this.updateElement();
   }

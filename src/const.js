@@ -28,3 +28,52 @@ export const SortType = {
   BY_DATE: 'date',
   BY_RATING: 'rating',
 };
+
+export const UserAction = {
+  UPDATE_FILM_DETAILS : 'UPDATE_FILM_DETAILS',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+export const UpdateType = {
+  PRE_PATCH: 'PRE_PATCH',
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export const NavigationActionType = {
+  ALL_MOVIES: 'ALL_MOVIES',
+  WATCHLIST: 'WATCHLIST',
+  HISTORY: 'HISTORY',
+  FAVORITES: 'FAVORITES',
+  STATS: 'STATS',
+};
+
+export const SortStatsType = {
+  ALL_TIME: 'all-time',
+  TODAY: 'today',
+  WEEK: 'week',
+  MONTH: 'month',
+  YEAR: 'year',
+};
+
+export const userRanks = [
+  {
+    name: 'Novice',
+    min: 1,
+    max: 10,
+  },
+  {
+    name: 'Fun',
+    min: 11,
+    max: 20,
+  },
+  {
+    name: 'Movie Buff',
+    min: 21,
+    max: Infinity,
+  },
+];
+
+

@@ -23,11 +23,12 @@ const gettingComments = (data, id) => {
   return arr;
 };
 
-const createCommentsElement = (data) => {
+const createCommentsElement = (data, filmId) => {
   let element = '';
 
   for (let i = 0; i < data.length; i++) {
     const {
+      id,
       author,
       comments: text,
       date: time,
@@ -35,7 +36,7 @@ const createCommentsElement = (data) => {
     } = data[i];
 
     element += `
-      <li class="film-details__comment">
+      <li class="film-details__comment" data-id-film="${filmId}" data-id-comment="${id}">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-sleeping">
             </span>
@@ -44,7 +45,7 @@ const createCommentsElement = (data) => {
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
                 <span class="film-details__comment-day">${generateFormatDate(time, FormateDate.COMMENTS_DATE)}</span>
-                <button class="film-details__comment-delete">Delete</button>
+                <button class="film-details__comment-delete" data-id-comment="${id}">Delete</button>
               </p>
             </div>
           </li>`;
@@ -52,7 +53,7 @@ const createCommentsElement = (data) => {
   return element;
 };
 
-export const createPopupElement = (filmData, commentsData) => {
+const createPopupElement = (filmData, commentsData) => {
   const {
     id,
     filmInfo:{
@@ -73,10 +74,11 @@ export const createPopupElement = (filmData, commentsData) => {
       actors
     },
     comments: commentsId,
-    isToAlreadyWatched,
-    isToWatchlist,
-    isToFavorite,
-    isEmotionChecked,
+    userDetails: {
+      watchlist,
+      alreadyWatched,
+      favorite
+    },
   } = filmData;
 
 
@@ -147,9 +149,9 @@ export const createPopupElement = (filmData, commentsData) => {
       </div>
 
       <section class="film-details__controls" data-id-button="${id}">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${isToWatchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button  film-details__control-button--watched ${isToAlreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite ${isToFavorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
+        <button type="button" class="film-details__control-button  film-details__control-button--watched ${alreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
+        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>
       </section>
     </div>
 
@@ -158,40 +160,10 @@ export const createPopupElement = (filmData, commentsData) => {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsId.length}</span></h3>
 
         <ul class="film-details__comments-list">
-            ${createCommentsElement(comments)}
+            ${createCommentsElement(comments, id)}
         </ul>
 
-        <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label">
-          ${isEmotionChecked ? `<img src="./images/emoji/${isEmotionChecked}.png" width="55" height="55" alt="emoji">` : ''}
-          </div>
 
-          <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-          </label>
-
-          <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${isEmotionChecked === 'smile' ? 'checked' : ''}>
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${isEmotionChecked === 'sleeping' ? 'checked' : ''}>
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${isEmotionChecked === 'puke' ? 'checked' : ''}>
-            <label class="film-details__emoji-label" for="emoji-puke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${isEmotionChecked === 'angry' ? 'checked' : ''}>
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
-          </div>
-        </div>
       </section>
     </div>
   </form>
@@ -200,18 +172,19 @@ export const createPopupElement = (filmData, commentsData) => {
 };
 
 export default class PopupView extends SmartView {
+  #filmData = null;
   #commentsData = null;
 
   constructor (filmData, commentsData) {
     super();
-    this._filmData = PopupView.parseFilmToData(filmData);
+    this.#filmData = filmData;
     this.#commentsData = commentsData;
 
     this.#setInnerHandlers();
   }
 
   get template () {
-    return createPopupElement(this._filmData,this.#commentsData);
+    return createPopupElement(this.#filmData,this.#commentsData);
   }
 
   setRemovePopup = (callback) => {
@@ -228,6 +201,40 @@ export default class PopupView extends SmartView {
     this.setRemovePopup(this._callback.clickRemovePopup);
   }
 
+  setAddToWatchlist = (callback) => {
+    this._callback.clickAddToWatchlistButton = callback;
+    this
+      .element
+      .querySelector('.film-details__control-button--watchlist')
+      .addEventListener('click', this.#clickAddToWatchlist);
+  }
+
+  setAlreadyWatched = (callback) => {
+    this._callback.clickAlreadyWatchedButton = callback;
+    this
+      .element
+      .querySelector('.film-details__control-button--watched')
+      .addEventListener('click', this.#clickAlreadyWatched);
+  }
+
+  setAddToFavorite = (callback) => {
+    this._callback.clickAddToFavoriteButton = callback;
+    this
+      .element
+      .querySelector('.film-details__control-button--favorite')
+      .addEventListener('click', this.#clickAddToFavorite);
+  }
+
+  setDeleteComment = (callback) => {
+    this._callback.deleteComment = callback;
+    this
+      .element
+      .querySelectorAll('.film-details__comment-delete')
+      .forEach((comment) => {
+        comment.addEventListener('click', this.#clickDeleteComment);
+      });
+  }
+
   #setInnerHandlers = () => {
     this
       .element
@@ -241,78 +248,32 @@ export default class PopupView extends SmartView {
       .element
       .querySelector('.film-details__control-button--favorite')
       .addEventListener('click', this.#clickAddToFavorite);
-    this
-      .element
-      .querySelector('.film-details__emoji-list')
-      .addEventListener('input', this.#clickCommentEmotion);
+
   }
 
   #clickRemovePopupHandler = () => {
-    this._callback.clickRemovePopup(this.returnData());
+    this._callback.clickRemovePopup();
   }
 
   #clickAlreadyWatched = (evt) => {
     evt.preventDefault();
-
-    this.updateData({
-      isToAlreadyWatched: !this._filmData.isToAlreadyWatched,
-    });
+    this._callback.clickAlreadyWatchedButton();
   }
 
   #clickAddToWatchlist = (evt) => {
     evt.preventDefault();
-
-    this.updateData({
-      isToWatchlist: !this._filmData.isToWatchlist,
-    });
+    this._callback.clickAddToWatchlistButton();
   }
 
   #clickAddToFavorite = (evt) => {
     evt.preventDefault();
-
-    this.updateData({
-      isToFavorite: !this._filmData.isToFavorite,
-    });
+    this._callback.clickAddToFavoriteButton();
   }
 
-  #clickCommentEmotion = (evt) => {
-    this.updateData({
-      isEmotionChecked: evt.target.value,
-    });
+  #clickDeleteComment = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteComment(evt.target.dataset.idComment);
   }
 
-  returnData = () => PopupView.parseDataToFilm(this._filmData)//ОБРАТИТЬ ВНИМАНИЕ
-
-  static parseFilmToData = (film) => ({
-    ...film,
-    isToAlreadyWatched: film.userDetails.alreadyWatched,
-    isToWatchlist: film.userDetails.watchlist,
-    isToFavorite: film.userDetails.favorite,
-    isEmotionChecked: null,
-  })
-
-  static parseDataToFilm = (data) => {
-
-    const film = {...data};
-
-    if (film.userDetails.alreadyWatched !== film.isToAlreadyWatched) {
-      film.userDetails.alreadyWatched = !film.userDetails.alreadyWatched;
-    }
-
-    if (film.userDetails.watchlist !== film.isToWatchlist) {
-      film.userDetails.watchlist = !film.userDetails.watchlist;
-    }
-
-    if (film.userDetails.favorite !== film.isToFavorite) {
-      film.userDetails.favorite = !film.userDetails.favorite;
-    }
-
-    delete film.isToAlreadyWatched;
-    delete film.isToWatchlist;
-    delete film.isToFavorite;
-    delete film.isEmotionChecked;
-
-    return film;
-  }
 
 }

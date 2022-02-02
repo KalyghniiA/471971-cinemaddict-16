@@ -43,7 +43,7 @@ export const replace = (newElement, oldElement) => {
   }
   const oldScroll = oldChild.scrollTop;
   parent.replaceChild(newChild, oldChild);
-  newChild.scrollTop = oldScroll;
+  newChild.scrollTop = oldScroll ;
 };
 
 export const remove = (component) => {
