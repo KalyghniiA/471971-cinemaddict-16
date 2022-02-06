@@ -45,12 +45,13 @@ export default class NavigationView extends AbstractComponentView{
   }
 
   #clickNavigationHandler = (evt) => {
+    evt.preventDefault();
     if (evt.target.nodeName !== 'A') {
-      return;
+      this._callback.clickNavigation(evt.target.parentNode.dataset.type);
+    } else {
+      this._callback.clickNavigation(evt.target.dataset.type);
     }
 
-    evt.preventDefault();
-    this._callback.clickNavigation(evt.target.dataset.type);
   }
 
   #clickStatsHandler = (evt) => {

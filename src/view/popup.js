@@ -1,6 +1,7 @@
 import {generateFormatDate, getTimeFromMins} from '../utils/date';
 import {FormateDate} from '../const';
 import SmartView from './smart';
+import he from 'he';
 
 const createGenreElement = (genres) => {
   let elem = '';
@@ -30,7 +31,7 @@ const createCommentsElement = (data, filmId) => {
     const {
       id,
       author,
-      comments: text,
+      comment: text,
       date: time,
       emotion
     } = data[i];
@@ -41,7 +42,7 @@ const createCommentsElement = (data, filmId) => {
               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-sleeping">
             </span>
             <div>
-              <p class="film-details__comment-text">${text}</p>
+              <p class="film-details__comment-text">${he.encode(text)}</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
                 <span class="film-details__comment-day">${generateFormatDate(time, FormateDate.COMMENTS_DATE)}</span>
@@ -92,7 +93,7 @@ const createPopupElement = (filmData, commentsData) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+          <img class="film-details__poster-img" src="./${poster}" alt="">
 
           <p class="film-details__age">${ageRating}</p>
         </div>
@@ -135,7 +136,7 @@ const createPopupElement = (filmData, commentsData) => {
               <td class="film-details__cell">${releaseCountry}</td>
             </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">Genres</td>
+              <td class="film-details__term">${genre.length > 1 ? 'Genres' : 'Genre'}</td>
               <td class="film-details__cell">
                 ${createGenreElement(genre)}
               </td>

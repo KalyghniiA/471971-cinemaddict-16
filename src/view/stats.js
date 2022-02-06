@@ -100,6 +100,8 @@ const createStatisticsTemplate = (films, currentFilterType) => {
   const amountOfWatchedMinutes = getAmountOfWatchedMinutes(films);
   const historyMovies = getGenreHistoryFilms(films);
 
+  const userRank = document.querySelector('.profile__rating').textContent;
+
   const topGenre = historyMovies.genres[0];
   const countHistoryMovies = getCountHistoryFilms(films);
 
@@ -108,7 +110,7 @@ const createStatisticsTemplate = (films, currentFilterType) => {
   <p class="statistic__rank">
     Your rank
     <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-    <span class="statistic__rank-label">${getUserRank(films.length)}</span>
+    <span class="statistic__rank-label">${userRank}</span>
   </p>
     ${createFilterTemplate(currentFilterType)}
   <ul class="statistic__text-list">

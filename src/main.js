@@ -1,30 +1,24 @@
 
-import {generateComment, generateMocks} from './mock';
+
 import FilmsPresenter from './presenter/films-presenter';
 import FilmsModel from './model/films-model';
+import ApiService from './api-service';
+import CommentsModel from './model/comments-model';
 
 //Data
-const COMMENTS_COUNT = 100;
-const FILM_CARD_COUNT = 20;
+const AUTHORIZATION = 'Basic oiklcv324';
+const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
 
-const commentsData = Array.from({length: COMMENTS_COUNT}, generateComment);
-const copyComments = JSON.parse(JSON.stringify(commentsData));
-const mockData = generateMocks(copyComments, FILM_CARD_COUNT);
+const mainContainer = document.querySelector('.main');
 
-const filmsModel = new FilmsModel();
+const filmsModel = new FilmsModel(new ApiService(END_POINT, AUTHORIZATION));
+const commentsModel = new CommentsModel(new ApiService(END_POINT, AUTHORIZATION));
 
-
-filmsModel.films = mockData;
-filmsModel.comments = commentsData;
-
-//=>Header
-
-//=> MainContainer
-
-const movie = new FilmsPresenter(document.querySelector('.main'),filmsModel);
-//const navigation = new NavigationPresenter(document.querySelector('.main'), navigationModel, filmsModel);
+const movie = new FilmsPresenter(mainContainer,filmsModel, commentsModel);
 
 //navigation.init();
 movie.init();
+
+filmsModel.init();
 
 

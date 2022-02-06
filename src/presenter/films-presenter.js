@@ -23,6 +23,7 @@ import FooterView from '../view/footer';
 import StatisticsView from '../view/stats';
 import PopupPresenter from './popup-presenter';
 import ProfileView from '../view/profile';
+import LoadingView from '../view/loading';
 
 
 const FILM_CARD_COUNT_PER_STEP = 5;
@@ -31,6 +32,7 @@ const FILM_CARD_COUNT_PER_STEP = 5;
 export default class FilmsPresenter {
   #mainContainer = null;
   #filmsModel = null;
+  #commentsModel = null;
 
 
   #filmsContainerComponent = new FilmsView();
@@ -44,20 +46,25 @@ export default class FilmsPresenter {
   #statsComponent = null;
   #popupComponent = null;
   #headerComponent = null;
+  #loadingComponent = null;
+  #footerComponent = null;
 
   #renderedFilmsCount = FILM_CARD_COUNT_PER_STEP;
   #mainFilmsMap = new Map();
   #topRatedFilmsMap = new Map();
   #mostCommentedFilmsMap = new Map();
-  #sortingType = SortType.DEFAULT;
 
-  constructor (container, filmsModel) {
+  #sortingType = SortType.DEFAULT;
+  #isLoading = true;
+
+
+  constructor (container, filmsModel, commentsModel) {
     this.#mainContainer = container;
     this.#filmsModel = filmsModel;
-
+    this.#commentsModel = commentsModel;
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
-
+    this.#commentsModel.addObserver(this.#handleModelEvent);
   }
 
   get filters () {
@@ -126,9 +133,14 @@ export default class FilmsPresenter {
     this.#sortComponent.setSortClick(this.#handleSortChange);
   }
 
+  #renderLoading = () => {
+    this.#loadingComponent = new LoadingView();
+    render(this.#mainContainer, this.#loadingComponent);
+  }
+
   #renderFilmCard = (filmData, container, filmsMap, filmsModel) => {
     const filmPresenter = new FilmPresenter(this.#handleViewAction,  container, this.#handlePopupOpen);
-    filmPresenter.init(filmData, this.comments, filmsModel);
+    filmPresenter.init(filmData, filmsModel);
     filmsMap.set(filmData.id, filmPresenter);
   }
 
@@ -214,6 +226,10 @@ export default class FilmsPresenter {
   #renderBoard = () => {
     this.#renderHeader();
     this.#renderNavigation();
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
     if (!this.films.length) {
       this.#renderListNoEmpty();
     } else {
@@ -232,7 +248,8 @@ export default class FilmsPresenter {
 
   #renderFooter = () => {
     const footerStatisticsElement = document.querySelector('.footer__statistics');
-    render(footerStatisticsElement, new FooterView(this.films));
+    this.#footerComponent = new FooterView(this.films);
+    render(footerStatisticsElement,this.#footerComponent);
   }
 
   #clearFilms = (resetRenderedFilmCount = false) => {
@@ -272,6 +289,7 @@ export default class FilmsPresenter {
 
     if (this.#statsComponent) {
       this.#clearStats();
+      this.#statsComponent = null;
     }
 
     this.#clearFilms(value);
@@ -295,10 +313,11 @@ export default class FilmsPresenter {
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.DELETE_COMMENT:
-        this.#filmsModel.deleteComment(updateType, update);
+        this.#filmsModel.deleteComment(update);
+        this.#commentsModel.deleteComment(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this.#filmsModel.addComment(updateType, update);
+        this.#commentsModel.addComment(updateType, update);
         break;
     }
   }
@@ -343,6 +362,15 @@ export default class FilmsPresenter {
       case UpdateType.MAJOR:
         this.#clearBoard();
         this.#renderStats();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#headerComponent);
+        remove(this.#navigationComponent);
+        remove(this.#loadingComponent);
+        remove(this.#footerComponent);
+        this.#renderBoard();
+        this.#renderFooter();
         break;
     }
   }
@@ -392,8 +420,8 @@ export default class FilmsPresenter {
       this.#popupComponent.destroy();
     }
     const indexFilm = this.films.findIndex((film) => film.id === id);
-    this.#popupComponent = new PopupPresenter(this.#handleViewAction);
+    this.#popupComponent = new PopupPresenter(this.#handleViewAction, this.#commentsModel);
     document.body.classList.add('hide-overflow');
-    this.#popupComponent.init(this.films[indexFilm], this.comments, this.#filmsModel);
+    this.#popupComponent.init(this.films[indexFilm], this.#filmsModel);
   }
 }

@@ -6,7 +6,6 @@ import {NavigationActionType, UpdateType, UserAction} from '../const';
 export default class FilmPresenter {
   #container = null;
   #filmData = null;
-  #commentsData = null;
   #filmComponent = null;
 
   #changeData = null;
@@ -20,10 +19,9 @@ export default class FilmPresenter {
     this.#changePopup = changePopup;
   }
 
-  init = (filmData, commentsData, filmsModel) => {
+  init = (filmData, filmsModel) => {
 
     this.#filmData = filmData;
-    this.#commentsData = commentsData;
     this.#filmsModel = filmsModel;
 
 

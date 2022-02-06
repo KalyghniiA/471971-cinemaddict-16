@@ -20,7 +20,7 @@ export const FilmsContainer = {
 export const FormateDate = {
   YEAR: 'YYYY',
   FULL: 'D MMMM YYYY',
-  COMMENTS_DATE: 'YYYY/MM/D H:m',
+  COMMENTS_DATE: 'YYYY/MM/D H:mm',
 };
 
 export const SortType = {
@@ -40,6 +40,7 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 export const NavigationActionType = {
@@ -65,7 +66,7 @@ export const UserRanks = [
     max: 10,
   },
   {
-    name: 'Fun',
+    name: 'Fan',
     min: 11,
     max: 20,
   },

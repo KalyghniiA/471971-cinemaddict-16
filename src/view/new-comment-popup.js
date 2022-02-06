@@ -72,10 +72,7 @@ export default class NewCommentPopup extends SmartView {
     } = data;
 
     const newComment = {
-      id: nanoid(),
-      author: 'moke',
-      comments: commentText,
-      date: dayjs(),
+      comment: commentText,
       emotion: commentEmotion,
     };
 

@@ -13,15 +13,17 @@ export default class PopupPresenter {
   #changeData = null;
 
   #filmsModel = null;
+  #commentsModel = null;
 
-  constructor(changeData) {
+  constructor(changeData, commentsModel) {
     this.#changeData = changeData;
+    this.#commentsModel = commentsModel;
   }
 
-  init = (filmData, commentData, filmsModel) => {
+  init = async (filmData, filmsModel) => {
+    await this.#commentsModel.init(filmData.id);
+    this.#commentData = this.#commentsModel.comments;
     this.#filmData = filmData;
-    this.#commentData = commentData;
-
     this.#filmsModel = filmsModel;
 
 
@@ -179,6 +181,7 @@ export default class PopupPresenter {
   }
 
   #handlerAddComment = (newComment) => {
+    console.log(newComment);
     this.#changeData(
       UserAction.ADD_COMMENT,
       UpdateType.PRE_PATCH,

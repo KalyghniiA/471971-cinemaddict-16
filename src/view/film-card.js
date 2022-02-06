@@ -35,7 +35,7 @@ const createFilmCardElement = (data) => {
               <span class="film-card__duration">${getTimeFromMins(runtime)}</span>
               <span class="film-card__genre">${genre[0]}</span>
             </p>
-            <img src="./images/posters/${poster}" alt="" class="film-card__poster">
+            <img src="./${poster}" alt="" class="film-card__poster">
             <p class="film-card__description">${description.length >= MAX_QUANTITY_SYMBOL ? `${description.slice(0,MAX_QUANTITY_SYMBOL - 1)}...` : description}</p>
             <span class="film-card__comments">${comments.length} comments</span>
           </a>
