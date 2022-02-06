@@ -5,7 +5,6 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {filterStats} from '../utils/filter';
 import {getTimeFromMins} from '../utils/date';
-import {getUserRank} from '../utils/util';
 
 const renderChart = (statisticCtx, films) => {
   const historyMovies = getGenreHistoryFilms(films, 'genres', 'counts');

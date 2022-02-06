@@ -313,7 +313,6 @@ export default class FilmsPresenter {
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.DELETE_COMMENT:
-        this.#filmsModel.deleteComment(update);
         this.#commentsModel.deleteComment(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
@@ -326,16 +325,16 @@ export default class FilmsPresenter {
     switch (updateType) {
       case UpdateType.PRE_PATCH:
         if (this.#mainFilmsMap.has(data.id)) {
-          this.#mainFilmsMap.get(data.id).init(data, this.comments, this.#filmsModel);
+          this.#mainFilmsMap.get(data.id).init(data, this.#filmsModel);
         }
         if (this.#topRatedFilmsMap.has(data.id)){
-          this.#topRatedFilmsMap.get(data.id).init(data, this.comments, this.#filmsModel);
+          this.#topRatedFilmsMap.get(data.id).init(data, this.#filmsModel);
         }
         if (this.#mostCommentedFilmsMap.has(data.id)) {
-          this.#mostCommentedFilmsMap.get(data.id).init(data, this.comments, this.#filmsModel);
+          this.#mostCommentedFilmsMap.get(data.id).init(data, this.#filmsModel);
         }
         if (document.querySelector('.film-details')) {
-          this.#popupComponent.init(data, this.comments, this.#filmsModel);
+          this.#popupComponent.init(data, this.#filmsModel);
         }
         this.#clearHeader();
         this.#renderHeader();
@@ -349,7 +348,7 @@ export default class FilmsPresenter {
         this.#clearBoard(true);
         this.#renderBoard();
         if (document.querySelector('.film-details')) {
-          this.#popupComponent.init(data, this.comments, this.#filmsModel);
+          this.#popupComponent.init(data, this.#filmsModel);
         }
         break;
       case UpdateType.MINOR:

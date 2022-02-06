@@ -181,7 +181,6 @@ export default class PopupPresenter {
   }
 
   #handlerAddComment = (newComment) => {
-    console.log(newComment);
     this.#changeData(
       UserAction.ADD_COMMENT,
       UpdateType.PRE_PATCH,

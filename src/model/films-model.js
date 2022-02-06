@@ -1,6 +1,6 @@
 import AbstractObservable from '../utils/abstract-observable';
 import {NavigationActionType, UpdateType} from '../const';
-import dayjs from 'dayjs';
+
 
 export default class FilmsModel extends AbstractObservable {
   #apiService = null;
@@ -66,6 +66,7 @@ export default class FilmsModel extends AbstractObservable {
       },
     };
 
+
     delete adaptedFilm['film_info'];
     delete adaptedFilm['user_details'];
     delete adaptedFilm['filmInfo']['age_rating'];
@@ -100,29 +101,4 @@ export default class FilmsModel extends AbstractObservable {
 
   }
 
-  addComment = async (updateType, update) => {
-    console.log(update);
-
-    const newComment = update.newComment;
-    update.comments.push(newComment.id);
-    delete update.newComment;
-
-    const index = this.#films.findIndex((film) => film.id === update.id);
-
-    try {
-      const response = await this.#apiService.updateFilm(update);
-
-      const updateFilm = this.#adaptFilmToClient(response);
-      this.#films = [
-        ...this.#films.slice(0, index),
-        updateFilm,
-        ...this.#films.slice(index + 1)
-      ];
-
-      this._notify(updateType, update);
-    } catch (err) {
-      throw new Error('Can\'t update film');
-    }
-
-  }
 }

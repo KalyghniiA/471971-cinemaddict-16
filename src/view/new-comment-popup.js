@@ -1,8 +1,6 @@
 import SmartView from './smart';
-import {nanoid} from 'nanoid';
-import dayjs from 'dayjs';
 import he from 'he';
-//
+
 const createNewCommentElement = (data) => {
   const {commentEmotion, commentText} = data;
 
